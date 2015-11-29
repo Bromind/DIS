@@ -39,28 +39,33 @@
 /* Problem Description */
 
 // PROBLEM TYPE
-#define DETERMINISTIC        1  // 0= infinite steepness 1= above fitness used
+#define DETERMINISTIC        0  // 0= infinite steepness 1= above fitness used
 #define ADAPTIVE             0  // 0=fixed, 1=adaptive thresholds
 #define PUBLIC               0  // 0=local estimation (no information sharing),
                                 // 1= global dissemination (collaboration with neighbors)
 
 // THRESHOLD BASED ALGORITHM PARAMETERS
-#define THRESHOLD            3  // value of homogeneous threshold
+#define THRESHOLD            5  // value of homogeneous threshold
 #define STEEPNESS            10  // steepness of threshold cutoff
 #define ABANDON              0.1 // probability of giving up task (unused)
+#define LOST_THRESHOLD       2 // number of pixels before a target color is considered lost (used to change FSM state)
 
 // COLORS
 #define NB_COLORS            3 // Number of colors
 #define COLOR_BLIND          0 // 0=colors are ignored  1=colors are considered as different tasks
-#define LOST_THRESHOLD       2 // number of pixels before a target color is considered lost (used to change FSM state)
 #define NO_COLOR            -1 // Nothing special detected on screen (robot in front / gone through cylinder / wall)
 #define RED                  0
 #define GREEN                1
 #define BLUE                 2
 
-// STATES OF THE FINITE MACHINE
-#define STATE1     1
-#define STATE2     2
+// TASKS
+#define PERFORM_THRESHOLD    48 // Number of pixels to consider the robot close enough to the cylinder
+#define STEPS_IDLE           80 // Number of steps while the robot stops to perform a task
+
+// STATES OF THE FINITE STATE MACHINE
+#define STATE1     0 // "Search"
+#define STATE2     1 // "Go to a task"
+#define STATE3     2 // "Stop to perform action"
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* Global variables */
@@ -76,11 +81,12 @@ int robot_id;                       // Unique robot ID
 
 // FSM
 int state = STATE1; // state of FSM: either the robot is in state 1 (searching) or state 2 (going towards a color)
-
+int steps = 0; // Number of steps to stay in perform state
 // Colors & Thresholds
 int chosen_color = NO_COLOR; // color chosen by the robot
 int pos_color[NB_COLORS] = {0, 0, 0}; // average position of the chosen cylinder (camera)
-int size_color[NB_COLORS]; // size of largest colored cylinders
+int pixel_count[NB_COLORS] = {0, 0, 0}; // total number of pixels for each color (camera)
+int max_size_color[NB_COLORS]; // size of largest colored cylinders for each color (camera)
 int threshold[NB_COLORS] = {THRESHOLD, THRESHOLD, THRESHOLD}; // stores the thresholds corresponding to the colors
 int stimulus[NB_COLORS]; // stimuli corresponding to the colors
 
@@ -126,12 +132,12 @@ int checkThreshold(double RAND, int c){
 
 // Decision function
 void updateRobot(){
-  /* size_color est notre stimulus pour l'instant mais tu peux lui appliquer des
-     transformations ici et les stocker dans stimulus[NB_COLORS]. On peut employer
-     des boucles for mais on voulait que le code soit compréhensible dans un
+  /* max_size_color est notre stimulus pour l'instant mais tu peux lui appliquer des
+     transformations ici et les stocker dans stimulus[NB_COLORS] ou utiliser le pixel_count.
+     On peut employer des boucles for mais on voulait que le code soit compréhensible dans un
      premier temps. De toutes manières, le fonctionnement de la décision est
      totalement débile pour l'instant. */
-
+  
   if(ADAPTIVE==1){
     //adaptThresholds(); // Update thresholds based on time spent in search mode or receiver
   }
@@ -144,7 +150,7 @@ void updateRobot(){
   else { //No communication, the stimulus is only the number of colored pixels seen
     int c;
     for(c=0; c<NB_COLORS; c++){
-      stimulus[c] = size_color[c];
+      stimulus[c] = max_size_color[c]; // the stimulus is the sizes of the closest cylinders
     }
   }
 
@@ -168,9 +174,9 @@ void updateRobot(){
       state = STATE2;
     }
   }
-
   // if in chromataxis mode, check if cylinder was lost
-  else{ // state==STATE2
+  else if (state == STATE2) {
+    // Check if color is still in field of view
     if(chosen_color == RED && stimulus[RED] < LOST_THRESHOLD){
       chosen_color = NO_COLOR;
     }
@@ -184,25 +190,54 @@ void updateRobot(){
     if(chosen_color == NO_COLOR){
       state = STATE1;
     }
+
+    // Slow down to perform action
+    if(chosen_color == RED && stimulus[RED] > PERFORM_THRESHOLD){
+      state = STATE3;
+    }
+    else if (chosen_color == GREEN && stimulus[GREEN] > PERFORM_THRESHOLD){
+      state = STATE3;
+    }
+    else if (chosen_color == BLUE && stimulus[BLUE] > PERFORM_THRESHOLD){
+      state = STATE3;
+    }
+  }
+
+  // if gone into STATE3, start idling
+  else if (state == STATE3) {
+    if (steps < STEPS_IDLE){
+      //wait
+      steps++;
+    }
+    else {
+      state = STATE1;
+      steps = 0;
+    }
   }
 
 }
-////////////////////////////////////////////////////////////////////////////////
-// TO BE COMPLETED !
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/* Image Processing */
+
 void processImage(const unsigned char *image) {
-
-/* Il faut mettre à jour pos_color et size_color avec, respectivement, la position
-   du milieu du cylindre le plus gros et sa taille (pour chaque couleur)*/
-
-   int sizes[3] = {0, 0, 0};
+   // Reset global variables
+   int c;
+   for(c=0;c<NB_COLORS;c++){
+   pixel_count[c] = 0;
+   max_size_color[c] = 0;
+   pos_color[c] = 0;
+   }
+   // Reset temporary variables
    int min_colors[3] = {WIDTH, WIDTH, WIDTH};
    int max_colors[3] = {0, 0, 0};
-   //int mean_color[3] = {WIDTH/2, WIDTH/2, WIDTH/2};
-
-   int x;
-   int color;
+   int temp_size[3] = {0, 0, 0};
+   int previous_color = NO_COLOR;
 
    // Analyze a row of pixels
+   int x;
+   int current_color;
+
    for(x = 0; x < WIDTH; x++) {
      int r = wb_camera_image_get_red(image, WIDTH, x, 18);
      int g = wb_camera_image_get_green(image, WIDTH, x, 18);
@@ -210,32 +245,37 @@ void processImage(const unsigned char *image) {
 
      int scan[3] = {r, g, b};
 
-     // Check if pixel is colored
-     for (color = 0; color < NB_COLORS; color++) {
+     // Begin analysis
+     for (current_color = 0; current_color < NB_COLORS; current_color++) {
+       if(scan[current_color] >= 250) {
+         pixel_count[current_color]++; // Update pixel count for current color
 
-       if (scan[color] >= 250) {
-         sizes[color]++; // update size of color
-
-         // update min and max pixels
-         if (x < min_colors[color]) {
-           min_colors[color] = x;
+         if (previous_color == current_color){ // Good case, continue as usual
+           temp_size[current_color]++;
+           if (x > max_colors[current_color]) max_colors[current_color] = x;
+           if (x < min_colors[current_color]) min_colors[current_color] = x;
          }
-         else if (x > max_colors[color]) {
-           max_colors[color] = x;
+         else { // Change color
+           // Start new cluster
+           temp_size[current_color] = 1;
+           max_colors[current_color] = x;
+           min_colors[current_color] = x;
+           previous_color = current_color;
          }
-
+         // If the cluster is the biggest (yet), update size and mean position
+         if (max_size_color[current_color] < temp_size[current_color]){
+             max_size_color[current_color] = temp_size[current_color];
+             pos_color[current_color] = (int) (max_colors[current_color] + min_colors[current_color])/2;
+         }
        }
      }
-   }
-
-   // Compute the size of the cylinders and the position of their centers
-   for (color = 0; color < NB_COLORS; color++) {
-     size_color[color] = sizes[color];
-     pos_color[color] = (int) (max_colors[color] + min_colors[color])/2;
-   }
+     // If no color at all is found : reset color
+     if (scan[RED] < 250 && scan[GREEN] < 250 && scan[BLUE] < 250) {
+       previous_color = NO_COLOR;
+     }
+  }
 
 }
-////////////////////////////////////////////////////////////////////////////////
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* Motors Speed Calculations */
@@ -258,8 +298,11 @@ void chromataxis(int pos_chosen_color){
   int mr,ml;    // motor speed from chromataxis
   int d1 = 0;   // motor speed from braitenberg (right)
   int d2 = 0;  // motor speed from braitenberg (left)
-  printf("#%i chose to go %d\n", robot_id, chosen_color);
-
+  
+  if(DEBUG == 1){
+  //printf("#%i chose to go %d\n", robot_id, chosen_color);
+  }
+  
   mr = -10 * (pos_chosen_color-26);
   ml = 10 * (pos_chosen_color-26);
 
@@ -382,13 +425,19 @@ void run(int ms) {
     image=wb_camera_get_image(cam_tag);
     processImage(image); // processing camera image and updating pos_color, size_color
     updateRobot();
-    //printf("#%i : %d \n", robot_id, state);
-
-    if (state == STATE1){
+    
+    if(DEBUG==1){
+      printf("#%i : %d \n", robot_id, state);
+    }
+    
+    if (state == STATE1) {
       randomTurn();
     }
-    else if(state == STATE2){
+    else if (state == STATE2) {
       chromataxis(pos_color[chosen_color]);
+    }
+    else if (state == STATE3) {
+      wb_differential_wheels_set_speed(100,100); // slow approach (may be optional)
     }
 
     // receive emissions from other robots
