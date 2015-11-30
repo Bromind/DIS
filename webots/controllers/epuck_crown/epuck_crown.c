@@ -175,28 +175,16 @@ void updateRobot(){
 			// if in chromataxis mode, check if cylinder was lost
 		case GOTO_TASK :
 			// Check if color is still in field of view
-			if(chosen_color == RED && stimulus[RED] < LOST_THRESHOLD){
+			if(chosen_color != NO_COLOR && stimulus[chosen_color] < LOST_THRESHOLD){
 				chosen_color = NO_COLOR;
 			}
-			else if (chosen_color == GREEN && stimulus[GREEN] < LOST_THRESHOLD){
-				chosen_color = NO_COLOR;
-			}
-			else if (chosen_color == BLUE && stimulus[BLUE] < LOST_THRESHOLD){
-				chosen_color = NO_COLOR;
-			}
-			// if cylinder lost, go random search mode (STATE1)
-			if(chosen_color == NO_COLOR){
-				state = SEARCH;
+			if (chosen_color == NO_COLOR)
+			{
+              			state = SEARCH;
 			}
 
 			// Slow down to perform action
-			if(chosen_color == RED && stimulus[RED] > PERFORM_THRESHOLD){
-				state = STOP_MOVE;
-			}
-			else if (chosen_color == GREEN && stimulus[GREEN] > PERFORM_THRESHOLD){
-				state = STOP_MOVE;
-			}
-			else if (chosen_color == BLUE && stimulus[BLUE] > PERFORM_THRESHOLD){
+			if(chosen_color != NO_COLOR && stimulus[chosen_color] > PERFORM_THRESHOLD){
 				state = STOP_MOVE;
 			}
 			break;
