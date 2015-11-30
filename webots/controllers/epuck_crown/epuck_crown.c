@@ -67,6 +67,8 @@
 #define STATE2     1 // "Go to a task"
 #define STATE3     2 // "Stop to perform action"
 
+typedef enum {SEARCH, GOTO_TASK, STOP_MOVE} fsm_state;
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* Global variables */
 
@@ -80,7 +82,7 @@ static WbDeviceTag cam_tag;             // Camera
 int robot_id;                       // Unique robot ID
 
 // FSM
-int state = STATE1; // state of FSM: either the robot is in state 1 (searching) or state 2 (going towards a color)
+fsm_state state = SEARCH; // state of FSM: either the robot is in state "searching" or state "going towards a color"
 int steps = 0; // Number of steps to stay in perform state
 // Colors & Thresholds
 int chosen_color = NO_COLOR; // color chosen by the robot
@@ -155,7 +157,7 @@ void updateRobot(){
   }
 
   // if in search mode, try to pick a color according to probabilities
-  if(state == STATE1){
+  if(state == SEARCH){
     double RAND = rnd();
     if(checkThreshold(RAND, RED)){
       chosen_color = RED;
@@ -169,13 +171,13 @@ void updateRobot(){
     else {
       chosen_color = NO_COLOR;
     }
-    // if cylinder chosen, go chromataxis mode (STATE2)
+    // if cylinder chosen, go chromataxis mode (GOTO_TASK)
     if(chosen_color != NO_COLOR){
-      state = STATE2;
+      state = GOTO_TASK;
     }
   }
   // if in chromataxis mode, check if cylinder was lost
-  else if (state == STATE2) {
+  else if (state == GOTO_TASK) {
     // Check if color is still in field of view
     if(chosen_color == RED && stimulus[RED] < LOST_THRESHOLD){
       chosen_color = NO_COLOR;
@@ -188,29 +190,29 @@ void updateRobot(){
     }
     // if cylinder lost, go random search mode (STATE1)
     if(chosen_color == NO_COLOR){
-      state = STATE1;
+      state = SEARCH;
     }
 
     // Slow down to perform action
     if(chosen_color == RED && stimulus[RED] > PERFORM_THRESHOLD){
-      state = STATE3;
+      state = STOP_MOVE;
     }
     else if (chosen_color == GREEN && stimulus[GREEN] > PERFORM_THRESHOLD){
-      state = STATE3;
+      state = STOP_MOVE;
     }
     else if (chosen_color == BLUE && stimulus[BLUE] > PERFORM_THRESHOLD){
-      state = STATE3;
+      state = STOP_MOVE;
     }
   }
 
   // if gone into STATE3, start idling
-  else if (state == STATE3) {
+  else if (state == STOP_MOVE) {
     if (steps < STEPS_IDLE){
       //wait
       steps++;
     }
     else {
-      state = STATE1;
+      state = SEARCH;
       steps = 0;
     }
   }
@@ -430,13 +432,13 @@ void run(int ms) {
       printf("#%i : %d \n", robot_id, state);
     }
     
-    if (state == STATE1) {
+    if (state == SEARCH) {
       randomTurn();
     }
-    else if (state == STATE2) {
+    else if (state == GOTO_TASK) {
       chromataxis(pos_color[chosen_color]);
     }
-    else if (state == STATE3) {
+    else if (state == STOP_MOVE) {
       wb_differential_wheels_set_speed(100,100); // slow approach (may be optional)
     }
 
