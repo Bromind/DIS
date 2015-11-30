@@ -53,19 +53,12 @@
 // COLORS
 #define NB_COLORS            3 // Number of colors
 #define COLOR_BLIND          0 // 0=colors are ignored  1=colors are considered as different tasks
-#define NO_COLOR            -1 // Nothing special detected on screen (robot in front / gone through cylinder / wall)
-#define RED                  0
-#define GREEN                1
-#define BLUE                 2
+//#define NO_COLOR            -1 // Nothing special detected on screen (robot in front / gone through cylinder / wall)
+typedef enum {NO_COLOR=-1, RED, GREEN, BLUE} color;
 
 // TASKS
 #define PERFORM_THRESHOLD    48 // Number of pixels to consider the robot close enough to the cylinder
 #define STEPS_IDLE           80 // Number of steps while the robot stops to perform a task
-
-// STATES OF THE FINITE STATE MACHINE
-#define STATE1     0 // "Search"
-#define STATE2     1 // "Go to a task"
-#define STATE3     2 // "Stop to perform action"
 
 typedef enum {SEARCH, GOTO_TASK, STOP_MOVE} fsm_state;
 
@@ -87,7 +80,6 @@ int steps = 0; // Number of steps to stay in perform state
 // Colors & Thresholds
 int chosen_color = NO_COLOR; // color chosen by the robot
 int pos_color[NB_COLORS] = {0, 0, 0}; // average position of the chosen cylinder (camera)
-int pixel_count[NB_COLORS] = {0, 0, 0}; // total number of pixels for each color (camera)
 int max_size_color[NB_COLORS]; // size of largest colored cylinders for each color (camera)
 int threshold[NB_COLORS] = {THRESHOLD, THRESHOLD, THRESHOLD}; // stores the thresholds corresponding to the colors
 int stimulus[NB_COLORS]; // stimuli corresponding to the colors
@@ -120,7 +112,7 @@ float sigmoid(float threshold, float stimulus){
 	return (pow(stimulus,STEEPNESS))/(pow(stimulus,STEEPNESS)+pow(threshold,STEEPNESS));
 }
 
-int checkThreshold(double RAND, int c){
+int checkThreshold(double RAND, color c){
 	if (threshold[c]<=0) return 1;
 	if (DETERMINISTIC == 0){
 		if(RAND < sigmoid(threshold[c], stimulus[c])) return 1;
@@ -157,7 +149,7 @@ void updateRobot(){
 	}
 
 
-	double rand; //declarations for switch statements.
+         double rand; //declarations for switch statements.
 	// if in search mode, try to pick a color according to probabilities
 	switch (state) {
 		case SEARCH :
@@ -229,8 +221,8 @@ void updateRobot(){
 void processImage(const unsigned char *image) {
 	// Reset global variables
 	int c;
+	int pixel_count[NB_COLORS] = {0,0,0};
 	for(c=0;c<NB_COLORS;c++){
-		pixel_count[c] = 0;
 		max_size_color[c] = 0;
 		pos_color[c] = 0;
 	}
@@ -436,19 +428,19 @@ void run(int ms) {
 		printf("#%i : %d \n", robot_id, state);
 	}
 
-	switch (state)
-	{
-		case SEARCH :
-			randomTurn();
-			break;
-		case GOTO_TASK :
-			chromataxis(pos_color[chosen_color]);
-			break;
-		case STOP_MOVE :
-			wb_differential_wheels_set_speed(100,100); // slow approach (may be optional)
-			break;
-	}
-
+         switch (state)
+         {
+           case SEARCH :
+		randomTurn();
+           break;
+           case GOTO_TASK :
+		chromataxis(pos_color[chosen_color]);
+           break;
+           case STOP_MOVE :
+		wb_differential_wheels_set_speed(100,100); // slow approach (may be optional)
+           break;
+         }
+	
 	// receive emissions from other robots
 	receive_local_emission();
 
