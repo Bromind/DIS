@@ -1,0 +1,8 @@
+\chapter*{Introduction}
+This project deals with task allocation where there are multiple types of tasks. The robots will handle tasks that appear throughout the environment according to threshold-based task allocation strategies.
+
+We first propose static strategies where the weights of the stimuli are fixed and the thresholds are individual. We compare the homogeneous experiment, where all robots have the same threshold, to the heterogeneous case, where the robots adapt there thresholds depending on the time spent in search or by specializing in a peculiar task.
+
+In an attempt to improve performance by avoiding multiple robots selecting the same task, we analyze the benefits of a dynamic strategy where each robot emits a virtual potential field for the task type it selected. The robots use the intensities of the potential field separately for each type of task and use this additional information to dynamically adjust the weights of the stimuli.
+
+% All strategies were implemented and tested in Webots. Since the dynamic strategy has a number of parameters that can be optimized, we ran particle swarm optimization.

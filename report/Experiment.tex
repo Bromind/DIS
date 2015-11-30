@@ -1,0 +1,11 @@
+\chapter{Experimental Setup}
+
+\section{Task Handling Experiment}
+To assess the efficiency of our algorithms, we consider the task handling problem where 3 types of tasks appear in a closed arena. A task, represented as a colored cylinder (with colors being red, green or blue), is processed by a robot being in its vicinity for a given amount of time, but is not processed faster as the number of robots close to its position increases. Once a task is processed, it disappears and a new one appears at a random location. The goal of our algorithms is to optimize the task allocation so as to prevent multiple robots from picking the same task.
+
+Robots identify the tasks with the onboard camera. Each robot evaluates stimuli for red, green and blue tasks based on its local camera observations (perceived colors and pixel count, relative sizes in number of pixels). The stimuli  for  red,  green  and blue  are  multiplied  by  weights wr,  wg,  wb.  The  robot  will  then select the  task according to our thresholds-based algorithms. Once a  robot reaches  a  task it stops until the task is processed and disappears.
+
+In order to emit the virtual potential field, the robots are endowed with radio emitter (and receiver) that broadcasts (and gathers) the relevant information perceived by the robots, within a short range. These information are then fed into our public and individual threshold-based algorithm to dynamically adjust the weights of the stimuli.
+
+\section{Implemented simulator}
+[WE COULD DESCRIBE OUR IMPLEMENTATION HERE BUT OPTIONAL]

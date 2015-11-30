@@ -1,0 +1,134 @@
+\documentclass[a4paper,12pt,twoside]{report}
+
+% Encoding
+\usepackage[utf8]{inputenc}
+
+% Language
+\usepackage[english]{babel}
+
+% Images
+\usepackage{graphicx}
+\graphicspath{{Images/}}
+\usepackage{wrapfig}
+\usepackage{float}
+
+% Sections & Titles
+\usepackage{titlesec}
+\titleformat{\chapter}{\bf\huge}{\thechapter.}{20pt}{\huge\bf}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+%Bibliography
+\usepackage[backend=biber]{biblatex}
+\bibliography{Report}
+% Font
+\usepackage{lmodern}
+
+% Maths
+%\usepackage{amsmath}
+%\usepackage{amssymb}
+%\usepackage{mathrsfs}
+%\usepackage{mathabx}
+
+% Symbols
+\usepackage{eurosym}
+
+% Graphs
+\usepackage{listings}
+\usepackage{color} %red, green, blue, yellow, cyan, magenta, black, white
+\definecolor{mygreen}{RGB}{28,172,0} % color values Red, Green, Blue
+\definecolor{mylilas}{RGB}{170,55,241}
+\usepackage{hyperref}
+\usepackage[tmargin=2.5cm,bmargin=2.5cm,lmargin=3cm,rmargin=2cm]{geometry}% Marges et format
+
+\hypersetup{
+  colorlinks   = true,    % Colours links instead of ugly boxes
+  urlcolor     = black,    % Colour for external hyperlinks
+  linkcolor    = black,    % Colour of internal links
+  citecolor    = black     % Colour of citations
+}
+% Paragraph formatting
+\setlength{\parindent}{4em}
+\setlength{\parskip}{0.5em}
+%\renewcommand{\baselinestretch}{1}
+
+%Headers & Footers
+\usepackage{fancyhdr}
+\fancyhf{}
+%\fancyhead[LE,RO]{}
+\fancyhead[RE]{\footnotesize\nouppercase{\rightmark}}
+\fancyhead[LO]{\footnotesize\leftmark}
+%\fancyfoot[CE,CO]{\leftmark}
+\fancyfoot[LE,RO]{\footnotesize\thepage \hspace{1pt} / \pageref{LastPage}}
+
+% Page numbering
+\usepackage{lastpage} % Refer last page of document
+
+% Document description
+\title{Event handling using static and dynamic
+task allocation strategies}
+\author{Brice \bsc{Platerrier}}
+\date{30 November 2015}
+\lstset{language=Matlab,%
+    %basicstyle=\color{red},
+    breaklines=true,
+	basicstyle=\footnotesize,
+    morekeywords={matlab2tikz},
+    keywordstyle=\color{blue},%
+    morekeywords=[2]{1}, keywordstyle=[2]{\color{black}},
+    identifierstyle=\color{black},%
+    stringstyle=\color{mylilas},
+    commentstyle=\color{mygreen},%
+    showstringspaces=false,%without this there will be a symbol in the places where there is a space
+    numbers=left,%
+    numberstyle={\tiny \color{black}},% size of the numbers
+    numbersep=9pt, % this defines how far the numbers are from the text
+    emph=[1]{for,end,break},emphstyle=[1]\color{red}, %some words to emphasize
+    %emph=[2]{word1,word2}, emphstyle=[2]{style},
+}
+% Beginning document
+\begin{document}
+\newgeometry{margin=1in}
+\makeatletter
+
+% Titlepage
+  \begin{titlepage}
+  \pagestyle{empty}
+  \centering
+      {\large \textsc{Swiss Federal Institute of Technology in Lausanne}}\\
+    \vspace{5cm}
+       {\LARGE \textbf{\@title}} \\
+    \vfill
+        {\large Brice PLATERRIER, Martin VASSOR, Arnaud WALD} \\
+		\vspace{1em}
+				{\normalsize under the supervision of}\\
+		\vspace{1em}
+				{\large Felix Schill}\\
+		\vfill
+    {\large \@date}\\
+  \end{titlepage}
+\makeatother
+
+
+% Table of contents
+\pagenumbering{roman}
+\setcounter{page}{1}
+\thispagestyle{empty}
+\tableofcontents
+\restoregeometry
+\cleardoublepage
+
+\pagestyle{fancy}
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\input{Introduction.tex}
+\addcontentsline{toc}{chapter}{Introduction}
+\input{Experiment.tex}
+\input{TaskAllocationMechanism.tex}
+\input{Results&Discussion}
+\input{Conclusion}
+\addcontentsline{toc}{chapter}{Conclusion}
+\printbibliography
+
+\end{document}

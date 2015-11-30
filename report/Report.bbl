@@ -1,0 +1,45 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 2.5 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \sortlist{nty}{nty}
+    \entry{kalra}{incollection}{}
+      \name{author}{2}{}{%
+        {{hash=db3d3fe18d31176b125a853bf84e029b}{Kalra}{K\bibinitperiod}{Nidhi}{N\bibinitperiod}{}{}{}{}}%
+        {{hash=88b4c72ba9cf411dfef08a4c9acea1d5}{Martinoli}{M\bibinitperiod}{Alcherio}{A\bibinitperiod}{}{}{}{}}%
+      }
+      \list{publisher}{1}{%
+        {Springer}%
+      }
+      \strng{namehash}{74d59af74e1500514e4c5ed1a9ef9d41}
+      \strng{fullhash}{74d59af74e1500514e4c5ed1a9ef9d41}
+      \field{sortinit}{K}
+      \field{sortinithash}{a7d5b3aec5a0890aae7baf85a209abfc}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Distributed Autonomous Robotic Systems 7}
+      \field{title}{Comparative study of market-based and threshold-based task allocation}
+      \field{year}{2006}
+      \field{pages}{91\bibrangedash 101}
+      \range{pages}{11}
+    \endentry
+  \endsortlist
+\endrefsection
+\endinput
+
