@@ -297,9 +297,9 @@ void chromataxis(int pos_chosen_color){
 	int d1 = 0;   // motor speed from braitenberg (right)
 	int d2 = 0;  // motor speed from braitenberg (left)
 
-	if(DEBUG == 1){
-		//printf("#%i chose to go %d\n", robot_id, chosen_color);
-	}
+#ifdef DEBUG
+         printf("#%i chose to go %d\n", robot_id, chosen_color);
+#endif
 
 	mr = -10 * (pos_chosen_color-26);
 	ml = 10 * (pos_chosen_color-26);
@@ -424,9 +424,9 @@ void run(int ms) {
 	processImage(image); // processing camera image and updating pos_color, size_color
 	updateRobot();
 
-	if(DEBUG==1){
+#ifdef DEBUG
 		printf("#%i : %d \n", robot_id, state);
-	}
+#endif
 
          switch (state)
          {
