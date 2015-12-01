@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/W32TeX) (preloaded format=pdflatex 2015.8.15)  30 NOV 2015 21:02
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/W32TeX) (preloaded format=pdflatex 2015.8.15)  1 DEC 2015 10:23
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -997,14 +997,14 @@ Here is how much of TeX's memory you used:
  16760 multiletter control sequences out of 15000+600000
  48493 words of font info for 36 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 44i,11n,48p,915b,1643s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 44i,11n,48p,939b,1643s stack positions out of 5000i,500n,10000p,200000b,80000s
 {c:/texlive/2015/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{c:/texlive/2015/tex
 mf-dist/fonts/enc/dvips/lm/lm-rmsc.enc}<c:/texlive/2015/texmf-dist/fonts/type1/
 public/lm/lmbx12.pfb><c:/texlive/2015/texmf-dist/fonts/type1/public/lm/lmcsc10.
 pfb><c:/texlive/2015/texmf-dist/fonts/type1/public/lm/lmr10.pfb><c:/texlive/201
 5/texmf-dist/fonts/type1/public/lm/lmr12.pfb><c:/texlive/2015/texmf-dist/fonts/
 type1/public/lm/lmri12.pfb>
-Output written on Report.pdf (10 pages, 136428 bytes).
+Output written on Report.pdf (10 pages, 136617 bytes).
 PDF statistics:
  133 PDF objects out of 1000 (max. 8388607)
  114 compressed objects within 2 object streams
