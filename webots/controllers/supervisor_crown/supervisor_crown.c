@@ -29,7 +29,7 @@
 #define EVENT_PRODUCTIVITY_STEP 0.02  // amount removed from event (out of 1.0) if robot is processing it
 
 // Performance measure
-#define EVENTS_TO_HANDLE 10 //Number of events handled to consider the simulation successful
+#define EVENTS_TO_HANDLE 50 //Number of events handled to consider the simulation successful
 #define MAX_DURATION 2 // Number of iterations to do before resetting
 
 static WbNodeRef rob[ROBOTS];         // References to robots

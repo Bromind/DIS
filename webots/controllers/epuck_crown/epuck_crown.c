@@ -29,36 +29,37 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* e-Puck parameters */
-#define NB_SENSORS           8
-#define BIAS_SPEED           300
-#define WIDTH                52  //pixel width of the camera
-#define HEIGHT               39  //pixel height of the camera
+#define NB_SENSORS		8
+#define BIAS_SPEED		300
+#define WIDTH			52  //pixel width of the camera
+#define HEIGHT			39  //pixel height of the camera
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* Problem Description */
 
 // PROBLEM TYPE
-#define DETERMINISTIC        0  // 0= infinite steepness 1= above fitness used
-#define ADAPTIVE             0  // 0=fixed, 1=adaptive thresholds
-#define PUBLIC               0  // 0=local estimation (no information sharing),
+#define DETERMINISTIC		1//0  // 0= infinite steepness 1= above fitness used
+#define ADAPTIVE		  1 // 0=fixed, 1=adaptive thresholds
+#define PUBLIC			0  // 0=local estimation (no information sharing),
 // 1= global dissemination (collaboration with neighbors)
 
 // THRESHOLD BASED ALGORITHM PARAMETERS
-#define THRESHOLD            5  // value of homogeneous threshold
-#define STEEPNESS            10  // steepness of threshold cutoff
-#define ABANDON              0.1 // probability of giving up task (unused)
-#define LOST_THRESHOLD       2 // number of pixels before a target color is considered lost (used to change FSM state)
+#define THRESHOLD		5  // value of homogeneous threshold
+#define STEEPNESS		10  // steepness of threshold cutoff
+#define ABANDON			0.1 // probability of giving up task (unused)
+#define LOST_THRESHOLD		2 // number of pixels before a target color is considered lost (used to change FSM state)
+#define THRESHOLD_DELTA		1 // TODO valeur arbitraire
 
 // COLORS
-#define NB_COLORS            3 // Number of colors
-#define COLOR_BLIND          0 // 0=colors are ignored  1=colors are considered as different tasks
+#define NB_COLORS		3 // Number of colors
+#define COLOR_BLIND		0 // 1=colors are ignored  0=colors are considered as different tasks
 //#define NO_COLOR            -1 // Nothing special detected on screen (robot in front / gone through cylinder / wall)
 typedef enum {NO_COLOR=-1, RED, GREEN, BLUE} color;
 
 // TASKS
-#define PERFORM_THRESHOLD    48 // Number of pixels to consider the robot close enough to the cylinder
-#define STEPS_IDLE           80 // Number of steps while the robot stops to perform a task
+#define PERFORM_THRESHOLD    	48 // Number of pixels to consider the robot close enough to the cylinder
+#define STEPS_IDLE           	80 // Number of steps while the robot stops to perform a task
 
 typedef enum {SEARCH, GOTO_TASK, STOP_MOVE} fsm_state;
 
@@ -76,6 +77,7 @@ int robot_id;                       // Unique robot ID
 
 // FSM
 fsm_state state = SEARCH; // state of FSM: either the robot is in state "searching" or state "going towards a color"
+fsm_state previous_state = SEARCH;
 int steps = 0; // Number of steps to stay in perform state
 // Colors & Thresholds
 int chosen_color = NO_COLOR; // color chosen by the robot
@@ -98,6 +100,8 @@ WbDeviceTag emitter;
 
 float rgb_emission[3] = {0.0, 0.0, 0.0};
 float rgb_perception[3] = {0.0, 0.0, 0.0};
+
+void adaptThresholds(void); // TODO
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* Helper Functions */
@@ -124,6 +128,46 @@ int checkThreshold(double RAND, color c){
 	}
 }
 
+void adaptThresholds(void)
+{
+int i;
+#ifdef ADAPTIVE
+#ifdef COLOR_BLIND 	
+if(ADAPTIVE == 1 && COLOR_BLIND == 1) // Adaptive + color blind = Distance adaptation
+{
+	if(state == SEARCH && previous_state == SEARCH)
+	{
+		for(i = 0 ; i < NB_COLORS ; i++){
+			threshold[i] -= THRESHOLD_DELTA;
+		}
+	} else {
+		if (state == SEARCH && previous_state == STOP_MOVE){
+			for(i = 0 ; i < NB_COLORS ; i++){
+				threshold[i] += THRESHOLD_DELTA; // TODO eventually increase more
+			}
+		}
+	}
+
+}
+
+if(ADAPTIVE == 1 && COLOR_BLIND == 0) // Adaptive + not color blind = specialization
+{
+	if(state == STOP_MOVE && previous_state == GOTO_TASK && chosen_color != NO_COLOR) // if chosen_color = no_color, i.e. signal lost => do not specialize
+	{
+		threshold[chosen_color] -= 3*THRESHOLD_DELTA;
+		for(i = 0 ; i < NB_COLORS ; i++){
+			threshold[i] += THRESHOLD_DELTA;
+		}
+	}
+}
+
+#else			
+#endif
+#else
+	return;
+#endif
+}
+
 // Decision function
 void updateRobot(){
 	/* max_size_color est notre stimulus pour l'instant mais tu peux lui appliquer des
@@ -133,7 +177,7 @@ void updateRobot(){
 	   totalement débile pour l'instant. */
 
 	if(ADAPTIVE==1){
-		//adaptThresholds(); // Update thresholds based on time spent in search mode or receiver
+		adaptThresholds(); // Update thresholds based on time spent in search mode or receiver
 	}
 
 	if(PUBLIC==1){
@@ -148,6 +192,7 @@ void updateRobot(){
 		}
 	}
 
+	previous_state = state; 
 
          double rand; //declarations for switch statements.
 	// if in search mode, try to pick a color according to probabilities
@@ -302,9 +347,8 @@ void chromataxis(int pos_chosen_color){
 
 // Random Turn
 void randomTurn(){
-	int RAND = rnd();
-	msr = -200*RAND - 50;
-	msl = 200*RAND + 50;
+	msr = -200;
+	msl = 200;
 
 	wb_differential_wheels_set_speed(msl,msr);
 }
@@ -379,7 +423,7 @@ void receive_local_emission() {
 	int i;
 	float rgb_received[3] = {0.0, 0.0, 0.0};
 	for (i=0; i<3; i++)  rgb_perception[i] = 0.0;
-	while ((wb_receiver_get_queue_length(receiver) > 0)&& (count<FLOCK_SIZE)) {
+	while ((wb_receiver_get_queue_length(receiver) > 0) && (count<FLOCK_SIZE)) {
 
 		inbuffer = (char*) wb_receiver_get_data(receiver);
 		signal_strength = wb_receiver_get_signal_strength(receiver);
