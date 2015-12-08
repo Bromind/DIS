@@ -39,9 +39,9 @@
 /* Problem Description */
 
 // PROBLEM TYPE
-#define DETERMINISTIC		1//0  // 0= infinite steepness 1= above fitness used
+#define DETERMINISTIC		0//0  // 0= infinite steepness 1= above fitness used
 #define ADAPTIVE		  1 // 0=fixed, 1=adaptive thresholds
-#define PUBLIC			0  // 0=local estimation (no information sharing),
+#define PUBLIC			1  // 0=local estimation (no information sharing),
 // 1= global dissemination (collaboration with neighbors)
 
 // THRESHOLD BASED ALGORITHM PARAMETERS
@@ -101,7 +101,10 @@ WbDeviceTag emitter;
 float rgb_emission[3] = {0.0, 0.0, 0.0};
 float rgb_perception[3] = {0.0, 0.0, 0.0};
 
-void adaptThresholds(void); // TODO
+// Functions 
+void adaptThresholds(void); 
+void receive_local_emission(void);
+void send_local_emission(void);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* Helper Functions */
@@ -161,7 +164,7 @@ if(ADAPTIVE == 1 && COLOR_BLIND == 0) // Adaptive + not color blind = specializa
 	}
 }
 
-#else			
+#else // !COLOR_BLIND
 #endif
 #else
 	return;
@@ -176,22 +179,42 @@ void updateRobot(){
 	   premier temps. De toutes manières, le fonctionnement de la décision est
 	   totalement débile pour l'instant. */
 
+	// In any case (PUBLIC or not), the base stimulus is what we observe. In case of public, we modify it after.
+	int c;
+	for(c=0; c<NB_COLORS; c++){
+		stimulus[c] = max_size_color[c]; // the stimulus is the sizes of the closest cylinders
+	}
+
 	if(ADAPTIVE==1){
 		adaptThresholds(); // Update thresholds based on time spent in search mode or receiver
 	}
 
 	if(PUBLIC==1){
+		int i;
 		/* Ici coder la prise en compte des différentes émissions reçues */
-		//receive_local_emission();
-		//stimulus = "something";
-	}
-	else { //No communication, the stimulus is only the number of colored pixels seen
-		int c;
-		for(c=0; c<NB_COLORS; c++){
-			stimulus[c] = max_size_color[c]; // the stimulus is the sizes of the closest cylinders
+		receive_local_emission();
+		for(i = 0; i < NB_COLORS ; i++)
+		{
+			// We received the "normalized average stimulus" modified by senders distances. 
+			// We decrease our stimulus when this perception increases.
+			stimulus[i] -= stimulus[i]*rgb_perception[i];
 		}
-	}
+		// Send our local datas.
+		send_local_emission();
+#ifdef DEBUG
+		if(robot_id == 5)
+		{
+			printf("#%i max values {%i, %i, %i}\n", robot_id, max_size_color[0], max_size_color[1], max_size_color[2]);
+			printf("#%i received {%f, %f, %f}\n", robot_id, rgb_perception[0], rgb_perception[1], rgb_perception[2]);
+			printf("#%i send {%f, %f, %f}\n", robot_id, rgb_emission[0], rgb_emission[1], rgb_emission[2]);
+			printf("#%i stimulus {%i, %i, %i}\n", robot_id, stimulus[0], stimulus[1], stimulus[2]);
+#ifdef ADAPTIVE
+			printf("#%i thresholds {%i, %i, %i}\n", robot_id, threshold[0], threshold[1], threshold[2]);
+#endif
 
+		}
+#endif
+	} 
 	previous_state = state; 
 
          double rand; //declarations for switch statements.
@@ -408,7 +431,8 @@ void send_local_emission() {
 	char buffer[255];
 	int i;
 	// compute emission strength for each task typedef
-	for (i=0; i<3; i++)  rgb_emission[i] = rnd();  // random value for testing
+	for (i=0; i<3; i++)  
+		rgb_emission[i] = (float)max_size_color[i] / WIDTH; // We send our normalized stimulus for each color.
 
 	// send emission
 	sprintf(buffer, "r:%f g:%f b:%f", rgb_emission[0], rgb_emission[1], rgb_emission[2]);
