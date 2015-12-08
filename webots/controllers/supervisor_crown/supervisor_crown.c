@@ -59,7 +59,8 @@ bool printed;
 // Performance measure
 int events_handled = 0;
 int iterations = 1;
-double mean_perf = 0.0;
+double mean_perf1 = 0.0;
+double mean_perf2 = 0.0;
 double distance_travelled[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
 double previous_x[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
 double previous_y[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
@@ -187,11 +188,12 @@ static int run(int ms) {
     for (i = 0; i < ROBOTS; i++) {
       total_distance += distance_travelled[i];
     }
-    double metric2 = total_distance / ((double) duration);
+    double metric2 = total_distance / events_handled;
 
     iterations++;
 
-    mean_perf += metric1/MAX_DURATION;
+    mean_perf1 += metric1/MAX_DURATION;
+    mean_perf2 += metric2/MAX_DURATION;
 
     printf("Robots completed %d tasks in %llis, performance = %f \n", EVENTS_TO_HANDLE, duration, metric1);
     printf("Robots travelled %f meters in %llis, performance = %f \n", total_distance, duration, metric2);
@@ -203,7 +205,7 @@ static int run(int ms) {
 
   // Stop simulating after a certain number of iterations
   if (iterations > MAX_DURATION) {
-    printf("Simulation terminated in %llis. Mean performance = %f\n", clock/1000, mean_perf);
+    printf("Simulation terminated in %llis. Mean speed = %f. Mean distance per event = %f\n", clock/1000, mean_perf1, mean_perf2);
     sleep(5);
     wb_supervisor_simulation_revert();
   }
