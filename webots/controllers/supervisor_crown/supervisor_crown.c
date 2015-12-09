@@ -29,8 +29,8 @@
 #define EVENT_PRODUCTIVITY_STEP 0.02  // amount removed from event (out of 1.0) if robot is processing it
 
 // Performance measure
-#define EVENTS_TO_HANDLE 50 //Number of events handled to consider the simulation successful
-#define MAX_DURATION 2 // Number of iterations to do before resetting
+#define EVENTS_TO_HANDLE 15 //Number of events handled to consider the simulation successful
+#define MAX_DURATION 3 // Number of iterations to do before resetting
 
 static WbNodeRef rob[ROBOTS];         // References to robots
 static WbFieldRef robTrans[ROBOTS];   // Reference to track the position of the robots
@@ -65,6 +65,8 @@ double distance_travelled[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
 double previous_x[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
 double previous_y[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
 
+// Output variables
+FILE *outfile;
 
 // Generate random number in [0,1]
 double rnd(void) {
@@ -190,13 +192,17 @@ static int run(int ms) {
     }
     double metric2 = total_distance / events_handled;
 
-    iterations++;
-
     mean_perf1 += metric1/MAX_DURATION;
     mean_perf2 += metric2/MAX_DURATION;
 
-    printf("Robots completed %d tasks in %llis, performance = %f \n", EVENTS_TO_HANDLE, duration, metric1);
-    printf("Robots travelled %f meters in %llis, performance = %f \n", total_distance, duration, metric2);
+    fprintf(outfile, "metric1(%d) = %f;\n", iterations, metric1);
+    fprintf(outfile, "metric2(%d) = %f;\n", iterations, metric2);
+
+
+    //printf("Robots completed %d tasks in %llis, performance = %f \n", EVENTS_TO_HANDLE, duration, metric1);
+    //printf("Robots travelled %f meters in %llis, performance = %f \n", total_distance, duration, metric2);
+    iterations++;
+
     sleep(1);
     events_handled = 0;
     temp_clock = clock;
@@ -205,9 +211,10 @@ static int run(int ms) {
 
   // Stop simulating after a certain number of iterations
   if (iterations > MAX_DURATION) {
-    printf("Simulation terminated in %llis. Mean speed = %f. Mean distance per event = %f\n", clock/1000, mean_perf1, mean_perf2);
+    //printf("Simulation terminated in %llis. Mean speed = %f. Mean distance per event = %f\n", clock/1000, mean_perf1, mean_perf2);
     sleep(5);
-    wb_supervisor_simulation_revert();
+    fclose(outfile);
+    while(true);
   }
 
   /* Get data */
@@ -246,6 +253,8 @@ int main(void)
   wb_robot_step(2*STEP_SIZE);
 
   // start the controller
+  outfile = fopen("../../../matlab/output.m","w");
+
   printf("Starting main loop...\n");
   while (wb_robot_step(STEP_SIZE) != -1)
   {
