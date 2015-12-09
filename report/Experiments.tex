@@ -1,0 +1,22 @@
+\section{Experiments}
+To assess the efficiency of our algorithms, we consider the task handling problem where 3 types of tasks appear in a closed arena. A task, represented as a colored cylinder (with colors being red, green or blue), is processed by a robot being in its vicinity for a given amount of time, but is not processed faster as the number of robots close to its position increases. Once a task is processed, it disappears and a new one appears at a random location. The goal of our algorithms is to optimize the task allocation so as to prevent multiple robots from picking the same task.
+
+Robots identify the tasks with the onboard camera. Each robot evaluates stimuli for red, green and blue tasks based on its local camera observations (perceived colors and pixel count, relative sizes in number of pixels). The stimuli  for  red,  green  and blue  are  multiplied  by  weights $w_r$,  $w_g$,  $w_b$. The  robot  will  then select the  task according to our thresholds-based algorithms. Once a  robot reaches  a  task it stops until the task is processed and disappears.
+
+In order to emit the virtual potential field, the robots are endowed with radio emitter (and receiver) that broadcasts (and gathers) the relevant information perceived by the robots, within a short range. These information are then fed into our public and individual threshold-based algorithm to dynamically adjust the weights of the stimuli.
+
+\textbf{Implementation:}
+The framework used during the course of the project allowed us to test 3 main approaches. They could be divided in two categories, one being private (static case) and the other being public (dynamic case). On the one hand, we considered both homogenous (fixed and identical thresholds among robots) and heterogeneous (adative thresholds based on each robot's vision or time spent in search mode) cases. On the other hand, we took advantage of the local potential field emissions perceived by the robots to adjust the weights of each color stimulus to improve task allocation (though the thresholds are fixed).
+
+\textbf{Task Allocation Mechanism:}
+For the simulations to be comparable, we used the same Finite State Machine (FSM) for all simulations and all types of algorithms. The behavior of the robots could be described as follows. All the robots are initialized in the first state that consists in spinning around and processing the image from the camera to determine if task needs to be handled. Once a task is picked, the robot changes state and goes directly towards the task. If the robot happens to lose track of the target, it switches back to the search state. When the robot is close enough to the task, it slows down for a given amount of time to process the task.
+
+\subsection{Private, Fixed-Threshold Algorithm}
+In this first experiment, the same response threshold is assigned to each robot and identical for each color (no specialization). Various agent behaviors are obtained thanks to the local perception of the environment and the private assessment of the demand.
+[DESCRIBE INITIAL PARAMETERS]
+\subsection{Private, Adaptive-Threshold Algorithm}
+The next case considers adaptive thresholds to improve the robustness of the task allocation strategy. As the number of robots is not equal nor a multiple of the number of types of task, we chose to consider adaptation methods. The first one considers the robots to be colorblind, the threshold is the same for each color and the adaptation consists in lowering the value of all the thresholds as the robots remain in search mode (and conversely, increasing the value if a task is performed). The second one proceeds to a specialization of the robots as they perform a given type of task repeatedly. This approach can be combined with the previous one by lowering the thresholds of the robots if too much time is spent in search mode.
+[DESCRIBE THE ALGORITHM AND THE INITIALIZATION OF THE PARAMETERS AND THE ADAPTATION PROCESS]
+\subsection{Public, Fixed-Threshold Algorithm}
+
+[DESCRIBE THE ALGORITHM AND THE INITIALIZATION OF THE PARAMETERS AND THE ADAPTATION PROCESS (BASED ON POTENTIAL FIELD)]

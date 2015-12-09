@@ -19,7 +19,43 @@
 
 \refsection{0}
   \sortlist{nty}{nty}
-    \entry{kalra}{incollection}{}
+    \entry{3}{inproceedings}{}
+      \name{author}{2}{}{%
+        {{hash=7323e257e0a93b423cde33161cd56ef2}{Agassounon}{A\bibinitperiod}{William}{W\bibinitperiod}{}{}{}{}}%
+        {{hash=88b4c72ba9cf411dfef08a4c9acea1d5}{Martinoli}{M\bibinitperiod}{Alcherio}{A\bibinitperiod}{}{}{}{}}%
+      }
+      \list{publisher}{1}{%
+        {ACM}%
+      }
+      \strng{namehash}{5e5b34453ec591946af2f2f081f9aec9}
+      \strng{fullhash}{5e5b34453ec591946af2f2f081f9aec9}
+      \field{sortinit}{A}
+      \field{sortinithash}{b685c7856330eaee22789815b49de9bb}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proceedings of the first international joint conference on Autonomous agents and multi-agent systems: part 3}
+      \field{title}{Efficiency and robustness of threshold-based distributed allocation algorithms in multi-agent systems}
+      \field{year}{2002}
+      \field{pages}{1090\bibrangedash 1097}
+      \range{pages}{8}
+    \endentry
+    \entry{2}{incollection}{}
+      \name{author}{1}{}{%
+        {{hash=24eead65a94573a96ae9fea41a3fc0f6}{al}{a\bibinitperiod}{Bonabeau}{B\bibinitperiod}{et}{e\bibinitperiod}{}{}}%
+      }
+      \strng{namehash}{24eead65a94573a96ae9fea41a3fc0f6}
+      \strng{fullhash}{24eead65a94573a96ae9fea41a3fc0f6}
+      \field{sortinit}{a}
+      \field{sortinithash}{b685c7856330eaee22789815b49de9bb}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Swarm Intelligence}
+      \field{title}{Division of Labor and Task Allocation}
+      \field{year}{1999}
+      \field{pages}{91 -- 109 \bibrangedash  147}
+      \range{pages}{-1}
+    \endentry
+    \entry{1}{incollection}{}
       \name{author}{2}{}{%
         {{hash=db3d3fe18d31176b125a853bf84e029b}{Kalra}{K\bibinitperiod}{Nidhi}{N\bibinitperiod}{}{}{}{}}%
         {{hash=88b4c72ba9cf411dfef08a4c9acea1d5}{Martinoli}{M\bibinitperiod}{Alcherio}{A\bibinitperiod}{}{}{}{}}%

@@ -1,134 +1,67 @@
-\documentclass[a4paper,12pt,twoside]{report}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%2345678901234567890123456789012345678901234567890123456789012345678901234567890
+%        1         2         3         4         5         6         7         8
 
-% Encoding
-\usepackage[utf8]{inputenc}
+%\documentclass[letterpaper, 10 pt, conference]{ieeeconf}  % Comment this line out if you need a4paper
 
-% Language
-\usepackage[english]{babel}
+\documentclass[a4paper, 10pt, conference]{ieeeconf}      % Use this line for a4 paper
 
-% Images
-\usepackage{graphicx}
-\graphicspath{{Images/}}
-\usepackage{wrapfig}
-\usepackage{float}
+\IEEEoverridecommandlockouts                              % This command is only needed if
+                                                          % you want to use the \thanks command
 
-% Sections & Titles
-\usepackage{titlesec}
-\titleformat{\chapter}{\bf\huge}{\thechapter.}{20pt}{\huge\bf}
-\setcounter{secnumdepth}{3}
-\setcounter{tocdepth}{3}
+\overrideIEEEmargins                                      % Needed to meet printer requirements.
 
-%Bibliography
+% See the \addtolength command later in the file to balance the column lengths
+% on the last page of the document
+
+% The following packages can be found on http:\\www.ctan.org
+%\usepackage{graphics} % for pdf, bitmapped graphics files
+%\usepackage{epsfig} % for postscript graphics files
+%\usepackage{mathptmx} % assumes new font selection scheme installed
+%\usepackage{times} % assumes new font selection scheme installed
+%\usepackage{amsmath} % assumes amsmath package installed
+%\usepackage{amssymb}  % assumes amsmath package installed
 \usepackage[backend=biber]{biblatex}
 \bibliography{Report}
-% Font
-\usepackage{lmodern}
 
-% Maths
-%\usepackage{amsmath}
-%\usepackage{amssymb}
-%\usepackage{mathrsfs}
-%\usepackage{mathabx}
 
-% Symbols
-\usepackage{eurosym}
-
-% Graphs
-\usepackage{listings}
-\usepackage{color} %red, green, blue, yellow, cyan, magenta, black, white
-\definecolor{mygreen}{RGB}{28,172,0} % color values Red, Green, Blue
-\definecolor{mylilas}{RGB}{170,55,241}
-\usepackage{hyperref}
-\usepackage[tmargin=2.5cm,bmargin=2.5cm,lmargin=3cm,rmargin=2cm]{geometry}% Marges et format
-
-\hypersetup{
-  colorlinks   = true,    % Colours links instead of ugly boxes
-  urlcolor     = black,    % Colour for external hyperlinks
-  linkcolor    = black,    % Colour of internal links
-  citecolor    = black     % Colour of citations
+\title{\LARGE \bf
+Event handling using static and dynamic task allocation strategies
 }
-% Paragraph formatting
-\setlength{\parindent}{4em}
-\setlength{\parskip}{0.5em}
-%\renewcommand{\baselinestretch}{1}
 
-%Headers & Footers
-\usepackage{fancyhdr}
-\fancyhf{}
-%\fancyhead[LE,RO]{}
-\fancyhead[RE]{\footnotesize\nouppercase{\rightmark}}
-\fancyhead[LO]{\footnotesize\leftmark}
-%\fancyfoot[CE,CO]{\leftmark}
-\fancyfoot[LE,RO]{\footnotesize\thepage \hspace{1pt} / \pageref{LastPage}}
 
-% Page numbering
-\usepackage{lastpage} % Refer last page of document
+\author{Brice Platerrier, Martin Vassor and Arnaud Wald}
 
-% Document description
-\title{Event handling using static and dynamic
-task allocation strategies}
-\author{Brice \bsc{Platerrier}}
-\date{30 November 2015}
-\lstset{language=Matlab,%
-    %basicstyle=\color{red},
-    breaklines=true,
-	basicstyle=\footnotesize,
-    morekeywords={matlab2tikz},
-    keywordstyle=\color{blue},%
-    morekeywords=[2]{1}, keywordstyle=[2]{\color{black}},
-    identifierstyle=\color{black},%
-    stringstyle=\color{mylilas},
-    commentstyle=\color{mygreen},%
-    showstringspaces=false,%without this there will be a symbol in the places where there is a space
-    numbers=left,%
-    numberstyle={\tiny \color{black}},% size of the numbers
-    numbersep=9pt, % this defines how far the numbers are from the text
-    emph=[1]{for,end,break},emphstyle=[1]\color{red}, %some words to emphasize
-    %emph=[2]{word1,word2}, emphstyle=[2]{style},
-}
-% Beginning document
 \begin{document}
-\newgeometry{margin=1in}
-\makeatletter
 
-% Titlepage
-  \begin{titlepage}
-  \pagestyle{empty}
-  \centering
-      {\large \textsc{Swiss Federal Institute of Technology in Lausanne}}\\
-    \vspace{5cm}
-       {\LARGE \textbf{\@title}} \\
-    \vfill
-        {\large Brice PLATERRIER, Martin VASSOR, Arnaud WALD} \\
-		\vspace{1em}
-				{\normalsize under the supervision of}\\
-		\vspace{1em}
-				{\large Felix Schill}\\
-		\vfill
-    {\large \@date}\\
-  \end{titlepage}
-\makeatother
-
-
-% Table of contents
-\pagenumbering{roman}
-\setcounter{page}{1}
+\maketitle
 \thispagestyle{empty}
-\tableofcontents
-\restoregeometry
-\cleardoublepage
+\pagestyle{empty}
 
-\pagestyle{fancy}
-\pagenumbering{arabic}
-\setcounter{page}{1}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{abstract}
 
+TO BE COMPLETED
+
+\end{abstract}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \input{Introduction.tex}
-\addcontentsline{toc}{chapter}{Introduction}
-\input{Experiment.tex}
-\input{TaskAllocationMechanism.tex}
-\input{Results&Discussion}
-\input{Conclusion}
-\addcontentsline{toc}{chapter}{Conclusion}
+
+\input{Experiments.tex}
+
+\input{Results&Discussion.tex}
+
+\input{Conclusion.tex}
+
+%\addtolength{\textheight}{-12cm}   % This command serves to balance the column lengths
+                                  % on the last page of the document manually. It shortens
+                                  % the textheight of the last page by a suitable amount.
+                                  % This command does not take effect until the next page
+                                  % so it should come on the page before the last. Make
+                                  % sure that you do not shorten the textheight too much.
+
+
 \printbibliography
 
 \end{document}
