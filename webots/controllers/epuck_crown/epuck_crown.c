@@ -22,7 +22,7 @@
 #include <webots/distance_sensor.h>
 #include <webots/radio.h>
 
-#define DEBUG 1
+//#define DEBUG 1
 #define TIME_STEP 64
 #define FLOCK_SIZE 5
 
@@ -31,9 +31,9 @@
 /* e-Puck parameters */
 #define NB_SENSORS		8
 #define BIAS_SPEED		300
-#define WIDTH			52  //pixel width of the camera
-#define HEIGHT			39  //pixel height of the camera
-
+#define WIDTH					52  //pixel width of the camera
+#define HEIGHT				39  //pixel height of the camera
+#define MAXSPEED			1000
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* Problem Description */
@@ -59,7 +59,7 @@ typedef enum {NO_COLOR=-1, RED, GREEN, BLUE} color;
 
 // TASKS
 #define PERFORM_THRESHOLD    	48 // Number of pixels to consider the robot close enough to the cylinder
-#define STEPS_IDLE           	80 // Number of steps while the robot stops to perform a task
+#define STEPS_IDLE           	120 // Number of steps while the robot stops to perform a task
 
 typedef enum {SEARCH, GOTO_TASK, STOP_MOVE} fsm_state;
 
@@ -101,8 +101,9 @@ WbDeviceTag emitter;
 float rgb_emission[3] = {0.0, 0.0, 0.0};
 float rgb_perception[3] = {0.0, 0.0, 0.0};
 
-// Functions 
-void adaptThresholds(void); 
+// Functions
+void setSpeed(int, int);
+void adaptThresholds(void);
 void receive_local_emission(void);
 void send_local_emission(void);
 
@@ -135,7 +136,7 @@ void adaptThresholds(void)
 {
 int i;
 #ifdef ADAPTIVE
-#ifdef COLOR_BLIND 	
+#ifdef COLOR_BLIND
 if(ADAPTIVE == 1 && COLOR_BLIND == 1) // Adaptive + color blind = Distance adaptation
 {
 	if(state == SEARCH && previous_state == SEARCH)
@@ -195,7 +196,7 @@ void updateRobot(){
 		receive_local_emission();
 		for(i = 0; i < NB_COLORS ; i++)
 		{
-			// We received the "normalized average stimulus" modified by senders distances. 
+			// We received the "normalized average stimulus" modified by senders distances.
 			// We decrease our stimulus when this perception increases.
 			stimulus[i] -= stimulus[i]*rgb_perception[i];
 		}
@@ -214,8 +215,8 @@ void updateRobot(){
 
 		}
 #endif
-	} 
-	previous_state = state; 
+	}
+	previous_state = state;
 
          double rand; //declarations for switch statements.
 	// if in search mode, try to pick a color according to probabilities
@@ -365,7 +366,7 @@ void chromataxis(int pos_chosen_color){
 	msr = d1 + BIAS_SPEED + mr;
 	msl = d2 + BIAS_SPEED + ml;
 
-	wb_differential_wheels_set_speed(msl,msr);
+	setSpeed(msl,msr);
 }
 
 // Random Turn
@@ -373,7 +374,7 @@ void randomTurn(){
 	msr = -200;
 	msl = 200;
 
-	wb_differential_wheels_set_speed(msl,msr);
+	setSpeed(msl,msr);
 }
 
 // Random Walk
@@ -386,9 +387,18 @@ void randomWalk(){
 	msr = d1+BIAS_SPEED + 200*rnd(); msl = d2+BIAS_SPEED+ 200*rnd();
 	msr -= BIAS_SPEED * rnd()-10; msl -= BIAS_SPEED *rnd();
 
-	wb_differential_wheels_set_speed(msl,msr);
+	setSpeed(msl,msr);
 }
 
+void setSpeed(int LeftSpeed, int RightSpeed)
+{
+	if (LeftSpeed < -MAXSPEED) {LeftSpeed = -MAXSPEED;}
+	if (LeftSpeed >  MAXSPEED) {LeftSpeed =  MAXSPEED;}
+	if (RightSpeed < -MAXSPEED) {RightSpeed = -MAXSPEED;}
+	if (RightSpeed >  MAXSPEED) {RightSpeed =  MAXSPEED;}
+
+  wb_differential_wheels_set_speed(LeftSpeed,RightSpeed);
+}
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void reset(void) {
@@ -431,7 +441,7 @@ void send_local_emission() {
 	char buffer[255];
 	int i;
 	// compute emission strength for each task typedef
-	for (i=0; i<3; i++)  
+	for (i=0; i<3; i++)
 		rgb_emission[i] = (float)max_size_color[i] / WIDTH; // We send our normalized stimulus for each color.
 
 	// send emission
@@ -496,7 +506,7 @@ void run(int ms) {
 		wb_differential_wheels_set_speed(100,100); // slow approach (may be optional)
            break;
          }
-	
+
 	// receive emissions from other robots
 	receive_local_emission();
 

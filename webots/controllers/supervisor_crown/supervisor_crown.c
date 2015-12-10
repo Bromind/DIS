@@ -34,6 +34,10 @@
 
 static WbNodeRef rob[ROBOTS];         // References to robots
 static WbFieldRef robTrans[ROBOTS];   // Reference to track the position of the robots
+const double *loc[ROBOTS];   // Reference to track the initial position of the robots
+const double *rot[ROBOTS];   // Reference to track the initial position of the robots
+double initLoc[ROBOTS][3];
+double initRot[ROBOTS][4];
 
 typedef struct event_t {
   WbNodeRef event;     // Reference to the events
@@ -108,7 +112,7 @@ void randomize_event_color(int event_index) {
   wb_supervisor_field_set_sf_color(eventColor, color);
 }
 
-/* Detects if an robot has handled an event (i.e. has bounced into it) */
+/* Detects if a robot has handled an event (i.e. has bounced into it) */
 bool are_colliding(WbFieldRef robTransRef, WbFieldRef eveTransRef) {
   const double *p1 = wb_supervisor_field_get_sf_vec3f(robTransRef);
   const double *p2 = wb_supervisor_field_get_sf_vec3f(eveTransRef);
@@ -135,6 +139,10 @@ void reset(void) {
 //    rob_name << rob_prefix << i+1; // << "_0";
 
     rob[i] = wb_supervisor_node_get_from_def(aux);
+
+    wb_supervisor_field_set_sf_vec3f(wb_supervisor_node_get_field(rob[i],"translation"), initLoc[i]);
+    wb_supervisor_field_set_sf_rotation(wb_supervisor_node_get_field(rob[i],"rotation"), initRot[i]);
+
     robTrans[i] = wb_supervisor_node_get_field(rob[i],"translation");
     previous_x[i] = wb_supervisor_field_get_sf_vec3f(robTrans[i])[0];
     previous_y[i] = wb_supervisor_field_get_sf_vec3f(robTrans[i])[2];
@@ -248,7 +256,23 @@ int main(void)
   srand(time(NULL));
   // initialization
   wb_robot_init();
+  int i;
+  for (i=0;i<ROBOTS;i++) {
+    char aux[15];
+    sprintf(aux,"%s%d",rob_prefix,i+1);
+    rob[i] = wb_supervisor_node_get_from_def(aux);
+    loc[i] = wb_supervisor_field_get_sf_vec3f(wb_supervisor_node_get_field(rob[i],"translation"));
+    initLoc[i][0] = loc[i][0];
+     initLoc[i][1] = loc[i][1];
+      initLoc[i][2] = loc[i][2];
 
+    rot[i] = wb_supervisor_field_get_sf_rotation(wb_supervisor_node_get_field(rob[i],"rotation"));
+    initRot[i][0] = rot[i][0];
+    initRot[i][1] = rot[i][1];
+    initRot[i][2] = rot[i][2];
+    initRot[i][3] = rot[i][3];
+  }
+  
   reset();
   wb_robot_step(2*STEP_SIZE);
 
