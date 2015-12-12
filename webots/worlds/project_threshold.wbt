@@ -9,8 +9,8 @@ WorldInfo {
   fast2d "enki"
 }
 Viewpoint {
-  orientation -0.0268374 0.934051 0.356129 2.95818
-  position 0.880898 3.58028 -3.84657
+  orientation 0.0158377 0.704879 0.70915 3.15159
+  position 0.303388 4.55678 -0.308093
 }
 Background {
   skyColor [
@@ -229,7 +229,7 @@ Supervisor {
   controller "supervisor_crown"
 }
 DEF epuck_1 DifferentialWheels {
-  translation 0.695275 0 -0.412136
+  translation 0.6 0 -0.6
   rotation 0 1 0 -1.18781
   children [
     DEF rec Receiver {
@@ -1895,7 +1895,6 @@ DEF epuck_1 DifferentialWheels {
   speedUnit 0.00628
 }
 DEF epuck_2 DifferentialWheels {
-  translation -0.479085 0 -0.571057
   rotation 0 1 0 25.6404
   children [
     DEF em Emitter {
@@ -3634,7 +3633,7 @@ DEF epuck_2 DifferentialWheels {
   speedUnit 0.00628
 }
 DEF epuck_3 DifferentialWheels {
-  translation 0.425606 0 0.708716
+  translation 0.6 0 0.6
   rotation 0 1 0 22.5369
   children [
     DEF em Emitter {
@@ -5373,7 +5372,7 @@ DEF epuck_3 DifferentialWheels {
   speedUnit 0.00628
 }
 DEF epuck_4 DifferentialWheels {
-  translation -0.711168 0 -0.377422
+  translation -0.6 0 -0.6
   rotation 0 1 0 7.28915
   children [
     DEF em Emitter {
@@ -7112,7 +7111,7 @@ DEF epuck_4 DifferentialWheels {
   speedUnit 0.00628
 }
 DEF epuck_5 DifferentialWheels {
-  translation -0.341379 0 0.639103
+  translation -0.6 0 0.6
   rotation 0 1 0 2.39491
   children [
     DEF em Emitter {
