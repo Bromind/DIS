@@ -30,7 +30,7 @@
 
 // Performance measure
 //#define EVENTS_TO_HANDLE 15 //Number of events handled to consider the simulation successful
-#define MAX_DURATION 3 // Number of iterations to do before resetting.
+#define MAX_DURATION 10 // Number of iterations to do before resetting.
 #define MAX_TIME 300000 // Time (in ms) before resetting
 
 static WbNodeRef rob[ROBOTS];         // References to robots
@@ -245,7 +245,7 @@ static int run(int ms) {
            randomize_event_position(j);
            randomize_event_color(j);
            events_handled++;
-           printf("%d events handled \n", events_handled);
+           //printf("%d events handled \n", events_handled);
           }
        }
     }

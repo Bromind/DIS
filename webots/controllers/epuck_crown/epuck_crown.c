@@ -29,37 +29,37 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* e-Puck parameters */
-#define NB_SENSORS		8
-#define BIAS_SPEED		300
-#define WIDTH					52  //pixel width of the camera
-#define HEIGHT				39  //pixel height of the camera
-#define MAXSPEED			1000
+#define NB_SENSORS	8
+#define BIAS_SPEED	300
+#define WIDTH		52   //pixel width of the camera
+#define HEIGHT		39   //pixel height of the camera
+#define MAXSPEED		1000
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* Problem Description */
 
 // PROBLEM TYPE
-#define DETERMINISTIC		1//0  // 0= infinite steepness 1= above fitness used
-#define ADAPTIVE		0 // 0=fixed, 1=adaptive thresholds
-#define PUBLIC		0  // 0=local estimation (no information sharing),
-// 1= global dissemination (collaboration with neighbors)
+#define DETERMINISTIC	1   // 0= infinite steepness 1= above fitness used
+#define ADAPTIVE		0   // 0=fixed, 1=adaptive thresholds
+#define PUBLIC		0   // 0=local estimation (no information sharing),
+                               // 1= global dissemination (collaboration with neighbors)
 
 // THRESHOLD BASED ALGORITHM PARAMETERS
-#define THRESHOLD		5  // value of homogeneous threshold
+#define THRESHOLD		5   // value of homogeneous threshold
 #define STEEPNESS		10  // steepness of threshold cutoff
-#define ABANDON		0.1 // probability of giving up task (unused)
-#define LOST_THRESHOLD		2 // number of pixels before a target color is considered lost (used to change FSM state)
-#define THRESHOLD_DELTA	1 // TODO valeur arbitraire
+#define ABANDON		0 // probability of giving up task (unused)
+#define LOST_THRESHOLD	3   // number of pixels before a target color is considered lost (used to change FSM state)
+#define THRESHOLD_DELTA	1   // TODO valeur arbitraire
 
 // COLORS
-#define NB_COLORS		3 // Number of colors
-#define COLOR_BLIND		0 // 1=colors are ignored  0=colors are considered as different tasks
+#define NB_COLORS		3   // Number of colors
+#define COLOR_BLIND	1   // 1=colors are ignored  0=colors are considered as different tasks
 //#define NO_COLOR               -1 // Nothing special detected on screen (robot in front / gone through cylinder / wall)
 typedef enum {NO_COLOR=-1, RED, GREEN, BLUE} color;
 
 // TASKS
-#define PERFORM_THRESHOLD    	48 // Number of pixels to consider the robot close enough to the cylinder
-#define STEPS_IDLE           	120 // Number of steps while the robot stops to perform a task
+#define PERFORM_THRESHOLD  48  // Number of pixels to consider the robot close enough to the cylinder
+#define STEPS_IDLE         120 // Number of steps while the robot stops to perform a task
 
 typedef enum {SEARCH, GOTO_TASK, STOP_MOVE} fsm_state;
 
