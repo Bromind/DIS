@@ -29,11 +29,17 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* e-Puck parameters */
+
+// Real parameters
 #define NB_SENSORS	8
 #define BIAS_SPEED	300
 #define WIDTH		52   //pixel width of the camera
 #define HEIGHT		39   //pixel height of the camera
 #define MAXSPEED		1000
+
+// Additional simulation parameters (see receive_local_emission)
+#define MAX_RANGE 0.6 // maximum range of the perception of neighbor emissions
+#define MIN_RANGE 0.2 // minimal distance under which the color perception saturates
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* Problem Description */
@@ -50,10 +56,12 @@
 #define ABANDON		0   // probability of giving up task (unused)
 #define LOST_THRESHOLD	3   // number of pixels before a target color is considered lost (used to change FSM state)
 #define THRESHOLD_DELTA	0.01   // TODO valeur arbitraire
+#define ALPHA			0.3 // weight of the received neighbors perception (global perception)
+#define BETA	 		0.1 // additional weight given to vision (local perception)
 
 // COLORS
 #define NB_COLORS		3   // Number of colors
-#define COLOR_BLIND	1   // 1=colors are ignored  0=colors are considered as different tasks
+#define COLOR_BLIND	0   // 1=colors are ignored  0=colors are considered as different tasks
 //#define NO_COLOR               -1 // Nothing special detected on screen (robot in front / gone through cylinder / wall)
 typedef enum {NO_COLOR=-1, RED, GREEN, BLUE} color;
 
@@ -159,9 +167,17 @@ if(ADAPTIVE == 1 && COLOR_BLIND == 0) // Adaptive + not color blind = specializa
 {
 	if(state == STOP_MOVE && previous_state == GOTO_TASK && chosen_color != NO_COLOR) // if chosen_color = no_color, i.e. signal lost => do not specialize
 	{
-		threshold[chosen_color] -= 3*THRESHOLD_DELTA;
+		threshold[chosen_color] -= 100*THRESHOLD_DELTA;
 		for(i = 0 ; i < NB_COLORS ; i++){
-			threshold[i] += THRESHOLD_DELTA;
+			threshold[i] += 50*THRESHOLD_DELTA;
+			if (threshold[i] < LOST_THRESHOLD) threshold[i] = LOST_THRESHOLD;
+		}
+	}
+	if(state == SEARCH && previous_state == SEARCH)
+	{
+		for(i = 0 ; i < NB_COLORS ; i++){
+			threshold[i] -= THRESHOLD_DELTA;
+			if (threshold[i] < LOST_THRESHOLD) threshold[i] = LOST_THRESHOLD;
 		}
 	}
 }
@@ -199,7 +215,7 @@ void updateRobot(){
 		{
 			// We received the "normalized average stimulus" modified by senders distances.
 			// We decrease our stimulus when this perception increases.
-			stimulus[i] -= stimulus[i]*rgb_perception[i];
+			stimulus[i] = stimulus[i]*(1 + BETA - ALPHA*rgb_perception[i]);
 		}
 		// Send our local datas.
 		send_local_emission();
@@ -397,10 +413,10 @@ void slowMotion(){
   int d2 = 0;  // motor speed from braitenberg (left)
 
   obstacle_avoidance(&d1, &d2);
-  
+
   msr = d1 + BIAS_SPEED/3;
   msl = d2 + BIAS_SPEED/3;
-  
+
   setSpeed(msl,msr);
 }
 
@@ -470,23 +486,33 @@ void receive_local_emission() {
 	int count = 0;
 	int i;
 	float rgb_received[3] = {0.0, 0.0, 0.0};
-	for (i=0; i<3; i++)  rgb_perception[i] = 0.0;
-	while ((wb_receiver_get_queue_length(receiver) > 0) && (count<FLOCK_SIZE)) {
+	float min_strength = 1/pow(MAX_RANGE,2); // further robot emissions are not perceived
+	float max_strength = 1/pow(MIN_RANGE,2); // closer robot emissions saturates
 
+	// initialize rgb perceptions
+	for (i=0; i<3; i++)  rgb_perception[i] = 0.0;
+
+	while ((wb_receiver_get_queue_length(receiver) > 0) && (count<FLOCK_SIZE)) {
 		inbuffer = (char*) wb_receiver_get_data(receiver);
 		signal_strength = wb_receiver_get_signal_strength(receiver);
-		sscanf(inbuffer,"r:%f g:%f b:%f",&rgb_received[0], &rgb_received[1], &rgb_received[2]);
 
-		//printf ("RSSI: %f ", signal_strength);
-		for (i=0; i<3; i++) {
-			// sum locally received concentration of emissions, weighted by signal strength
-			// signal strength is 1/r^2 (r = distance between robots)
-			// this function can be adapted to get a differently shaped potential field
-			rgb_perception[i] += rgb_received[i] * signal_strength;
+		if(signal_strength > min_strength){ // don't take robots too far away into account
+			// if robot is too close, the reception saturates (limit of signal strength)
+			if(signal_strength > max_strength) signal_strength = max_strength;
+			// receive emissions from other robots
+			sscanf(inbuffer,"r:%f g:%f b:%f",&rgb_received[0], &rgb_received[1], &rgb_received[2]);
+			// printf ("RSSI: %f ", signal_strength);
+			for (i=0; i<3; i++) {
+				// sum locally received concentration of emissions, weighted by signal strength
+				// signal strength is 1/r^2 (r = distance between robots)
+				// this function can be adapted to get a differently shaped potential field
+				rgb_perception[i] += rgb_received[i] * signal_strength/max_strength;
+			}
+			count++;
 		}
-		count++;
 		wb_receiver_next_packet(receiver);
 	}
+
 	if (count>1) {
 		for (i=0; i<3; i++)  rgb_perception[i] /= (float)count;
 		//printf ("#%i received: (%f %f %f)\n", robot_id, rgb_perception[0], rgb_perception[1], rgb_perception[2]);
