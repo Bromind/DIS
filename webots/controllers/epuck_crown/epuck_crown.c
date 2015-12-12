@@ -40,17 +40,16 @@
 
 // PROBLEM TYPE
 #define DETERMINISTIC	0   // 0= infinite steepness 1= above fitness used
-#define ADAPTIVE		0   // 0=fixed, 1=adaptive thresholds
-#define PUBLIC		1   // 0=local estimation (no information sharing),
+#define ADAPTIVE		1   // 0=fixed, 1=adaptive thresholds
+#define PUBLIC		0   // 0=local estimation (no information sharing),
                                // 1= global dissemination (collaboration with neighbors)
 
 // THRESHOLD BASED ALGORITHM PARAMETERS
-#define THRESHOLD		8   // value of homogeneous threshold
+#define THRESHOLD		5   // value of homogeneous threshold
 #define STEEPNESS		30  // steepness of threshold cutoff
 #define ABANDON		0   // probability of giving up task (unused)
 #define LOST_THRESHOLD	3   // number of pixels before a target color is considered lost (used to change FSM state)
-#define THRESHOLD_DELTA	1   // TODO valeur arbitraire
-#define COMM_RANGE  0.6 // Communication range
+#define THRESHOLD_DELTA	0.01   // TODO valeur arbitraire
 
 // COLORS
 #define NB_COLORS		3   // Number of colors
@@ -84,7 +83,7 @@ int steps = 0; // Number of steps to stay in perform state
 int chosen_color = NO_COLOR; // color chosen by the robot
 int pos_color[NB_COLORS] = {0, 0, 0}; // average position of the chosen cylinder (camera)
 int max_size_color[NB_COLORS]; // size of largest colored cylinders for each color (camera)
-int threshold[NB_COLORS] = {THRESHOLD, THRESHOLD, THRESHOLD}; // stores the thresholds corresponding to the colors
+float threshold[NB_COLORS] = {THRESHOLD, THRESHOLD, THRESHOLD}; // stores the thresholds corresponding to the colors
 int stimulus[NB_COLORS]; // stimuli corresponding to the colors
 
 // Motors speed
@@ -133,43 +132,45 @@ int checkThreshold(double RAND, color c){
 	}
 }
 
-void adaptThresholds(void) {
-	int i;
-		#ifdef ADAPTIVE
-		#ifdef COLOR_BLIND
-	if(ADAPTIVE == 1 && COLOR_BLIND == 1) // Adaptive + color blind = Distance adaptation
+void adaptThresholds(void)
+{
+int i;
+#ifdef ADAPTIVE
+#ifdef COLOR_BLIND
+if(ADAPTIVE == 1 && COLOR_BLIND == 1) // Adaptive + color blind = Distance adaptation
+{
+	if(state == SEARCH && previous_state == SEARCH)
 	{
-		if(state == SEARCH && previous_state == SEARCH)
-		{
-			for(i = 0 ; i < NB_COLORS ; i++){
-				threshold[i] -= THRESHOLD_DELTA;
-			}
-		} else {
-			if (state == SEARCH && previous_state == STOP_MOVE){
-				for(i = 0 ; i < NB_COLORS ; i++){
-					threshold[i] += THRESHOLD_DELTA; // TODO eventually increase more
-				}
-			}
+		for(i = 0 ; i < NB_COLORS ; i++){
+			threshold[i] -= THRESHOLD_DELTA;
+			if (threshold[i] < LOST_THRESHOLD) threshold[i] = LOST_THRESHOLD;
 		}
-
-	}
-
-	if(ADAPTIVE == 1 && COLOR_BLIND == 0) // Adaptive + not color blind = specialization
-	{
-		if(state == STOP_MOVE && previous_state == GOTO_TASK && chosen_color != NO_COLOR) // if chosen_color = no_color, i.e. signal lost => do not specialize
-		{
-			threshold[chosen_color] -= 3*THRESHOLD_DELTA;
+	} else {
+		if (state == SEARCH && previous_state == STOP_MOVE){
 			for(i = 0 ; i < NB_COLORS ; i++){
-				threshold[i] += THRESHOLD_DELTA;
+				threshold[i] += 1; // TODO eventually increase more
 			}
 		}
 	}
 
-		#else // !COLOR_BLIND
-		#endif
-		#else
+}
+
+if(ADAPTIVE == 1 && COLOR_BLIND == 0) // Adaptive + not color blind = specialization
+{
+	if(state == STOP_MOVE && previous_state == GOTO_TASK && chosen_color != NO_COLOR) // if chosen_color = no_color, i.e. signal lost => do not specialize
+	{
+		threshold[chosen_color] -= 3*THRESHOLD_DELTA;
+		for(i = 0 ; i < NB_COLORS ; i++){
+			threshold[i] += THRESHOLD_DELTA;
+		}
+	}
+}
+
+#else // !COLOR_BLIND
+#endif
+#else
 	return;
-		#endif
+#endif
 }
 
 // Decision function
@@ -202,19 +203,19 @@ void updateRobot(){
 		}
 		// Send our local datas.
 		send_local_emission();
-			#ifdef DEBUG
+#ifdef DEBUG
 		if(robot_id == 5)
 		{
 			printf("#%i max values {%i, %i, %i}\n", robot_id, max_size_color[0], max_size_color[1], max_size_color[2]);
 			printf("#%i received {%f, %f, %f}\n", robot_id, rgb_perception[0], rgb_perception[1], rgb_perception[2]);
 			printf("#%i send {%f, %f, %f}\n", robot_id, rgb_emission[0], rgb_emission[1], rgb_emission[2]);
 			printf("#%i stimulus {%i, %i, %i}\n", robot_id, stimulus[0], stimulus[1], stimulus[2]);
-				#ifdef ADAPTIVE
-			printf("#%i thresholds {%i, %i, %i}\n", robot_id, threshold[0], threshold[1], threshold[2]);
-				#endif
+#ifdef ADAPTIVE
+			printf("#%i thresholds {%f, %f, %f}\n", robot_id, threshold[0], threshold[1], threshold[2]);
+#endif
 
 		}
-			#endif
+#endif
 	}
 	previous_state = state;
 
@@ -354,9 +355,9 @@ void chromataxis(int pos_chosen_color){
 	int d1 = 0;   // motor speed from braitenberg (right)
 	int d2 = 0;  // motor speed from braitenberg (left)
 
-		#ifdef DEBUG
+#ifdef DEBUG
          printf("#%i chose to go %d\n", robot_id, chosen_color);
-		#endif
+#endif
 
 	mr = -10 * (pos_chosen_color-26);
 	ml = 10 * (pos_chosen_color-26);
@@ -396,14 +397,15 @@ void slowMotion(){
   int d2 = 0;  // motor speed from braitenberg (left)
 
   obstacle_avoidance(&d1, &d2);
-
+  
   msr = d1 + BIAS_SPEED/3;
   msl = d2 + BIAS_SPEED/3;
-
+  
   setSpeed(msl,msr);
 }
 
-void setSpeed(int LeftSpeed, int RightSpeed) {
+void setSpeed(int LeftSpeed, int RightSpeed)
+{
 	if (LeftSpeed < -MAXSPEED) {LeftSpeed = -MAXSPEED;}
 	if (LeftSpeed >  MAXSPEED) {LeftSpeed =  MAXSPEED;}
 	if (RightSpeed < -MAXSPEED) {RightSpeed = -MAXSPEED;}
@@ -468,11 +470,7 @@ void receive_local_emission() {
 	int count = 0;
 	int i;
 	float rgb_received[3] = {0.0, 0.0, 0.0};
-	float min_strength = 1/(pow(COMM_RANGE,2));
-	float max_strength = 0.0;
-
 	for (i=0; i<3; i++)  rgb_perception[i] = 0.0;
-
 	while ((wb_receiver_get_queue_length(receiver) > 0) && (count<FLOCK_SIZE)) {
 
 		inbuffer = (char*) wb_receiver_get_data(receiver);
@@ -484,20 +482,13 @@ void receive_local_emission() {
 			// sum locally received concentration of emissions, weighted by signal strength
 			// signal strength is 1/r^2 (r = distance between robots)
 			// this function can be adapted to get a differently shaped potential field
-
-			// Consider only receptions within a certain radius of communication
-			if (signal_strength > min_strength){
-				rgb_perception[i] += rgb_received[i] * signal_strength;
-			}
-			// Find the normalization factor
-			if (signal_strength > max_strength) max_strength = signal_strength;
-
+			rgb_perception[i] += rgb_received[i] * signal_strength;
 		}
 		count++;
 		wb_receiver_next_packet(receiver);
 	}
 	if (count>1) {
-		for (i=0; i<3; i++)  rgb_perception[i] /= (max_strength * (float)count);
+		for (i=0; i<3; i++)  rgb_perception[i] /= (float)count;
 		//printf ("#%i received: (%f %f %f)\n", robot_id, rgb_perception[0], rgb_perception[1], rgb_perception[2]);
 	}
 }
@@ -513,9 +504,9 @@ void run(int ms) {
 	processImage(image); // processing camera image and updating pos_color, size_color
 	updateRobot();
 
-		#ifdef DEBUG
-	printf("#%i : %d \n", robot_id, state);
-		#endif
+#ifdef DEBUG
+		printf("#%i : %d \n", robot_id, state);
+#endif
 
          switch (state)
          {

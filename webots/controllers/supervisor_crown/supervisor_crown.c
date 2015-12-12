@@ -30,8 +30,8 @@
 
 // Performance measure
 //#define EVENTS_TO_HANDLE 15 //Number of events handled to consider the simulation successful
-#define MAX_DURATION 10 // Number of iterations to do before resetting.
-#define MAX_TIME 300000 // Time (in ms) before resetting
+#define MAX_DURATION 40 // Number of iterations to do before resetting.
+#define MAX_TIME 180000 // Time (in ms) before resetting
 
 static WbNodeRef rob[ROBOTS];         // References to robots
 static WbFieldRef robTrans[ROBOTS];   // Reference to track the position of the robots
