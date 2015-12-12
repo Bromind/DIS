@@ -39,22 +39,22 @@
 /* Problem Description */
 
 // PROBLEM TYPE
-#define DETERMINISTIC		0//0  // 0= infinite steepness 1= above fitness used
-#define ADAPTIVE		  1 // 0=fixed, 1=adaptive thresholds
-#define PUBLIC			1  // 0=local estimation (no information sharing),
+#define DETERMINISTIC		1//0  // 0= infinite steepness 1= above fitness used
+#define ADAPTIVE		0 // 0=fixed, 1=adaptive thresholds
+#define PUBLIC		0  // 0=local estimation (no information sharing),
 // 1= global dissemination (collaboration with neighbors)
 
 // THRESHOLD BASED ALGORITHM PARAMETERS
 #define THRESHOLD		5  // value of homogeneous threshold
 #define STEEPNESS		10  // steepness of threshold cutoff
-#define ABANDON			0.1 // probability of giving up task (unused)
+#define ABANDON		0.1 // probability of giving up task (unused)
 #define LOST_THRESHOLD		2 // number of pixels before a target color is considered lost (used to change FSM state)
-#define THRESHOLD_DELTA		1 // TODO valeur arbitraire
+#define THRESHOLD_DELTA	1 // TODO valeur arbitraire
 
 // COLORS
 #define NB_COLORS		3 // Number of colors
 #define COLOR_BLIND		0 // 1=colors are ignored  0=colors are considered as different tasks
-//#define NO_COLOR            -1 // Nothing special detected on screen (robot in front / gone through cylinder / wall)
+//#define NO_COLOR               -1 // Nothing special detected on screen (robot in front / gone through cylinder / wall)
 typedef enum {NO_COLOR=-1, RED, GREEN, BLUE} color;
 
 // TASKS
@@ -390,6 +390,19 @@ void randomWalk(){
 	setSpeed(msl,msr);
 }
 
+// Slow motion
+void slowMotion(){
+  int d1 = 0;   // motor speed from braitenberg (right)
+  int d2 = 0;  // motor speed from braitenberg (left)
+
+  obstacle_avoidance(&d1, &d2);
+  
+  msr = d1 + BIAS_SPEED/3;
+  msl = d2 + BIAS_SPEED/3;
+  
+  setSpeed(msl,msr);
+}
+
 void setSpeed(int LeftSpeed, int RightSpeed)
 {
 	if (LeftSpeed < -MAXSPEED) {LeftSpeed = -MAXSPEED;}
@@ -503,7 +516,7 @@ void run(int ms) {
 		chromataxis(pos_color[chosen_color]);
            break;
            case STOP_MOVE :
-		wb_differential_wheels_set_speed(100,100); // slow approach (may be optional)
+		slowMotion(); // slow approach (may be optional)
            break;
          }
 
