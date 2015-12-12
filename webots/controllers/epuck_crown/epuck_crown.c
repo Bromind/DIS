@@ -45,7 +45,7 @@
                                // 1= global dissemination (collaboration with neighbors)
 
 // THRESHOLD BASED ALGORITHM PARAMETERS
-#define THRESHOLD		5   // value of homogeneous threshold
+#define THRESHOLD		10   // value of homogeneous threshold
 #define STEEPNESS		30  // steepness of threshold cutoff
 #define ABANDON		0   // probability of giving up task (unused)
 #define LOST_THRESHOLD	3   // number of pixels before a target color is considered lost (used to change FSM state)
