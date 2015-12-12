@@ -39,15 +39,15 @@
 /* Problem Description */
 
 // PROBLEM TYPE
-#define DETERMINISTIC	1   // 0= infinite steepness 1= above fitness used
+#define DETERMINISTIC	0   // 0= infinite steepness 1= above fitness used
 #define ADAPTIVE		0   // 0=fixed, 1=adaptive thresholds
 #define PUBLIC		0   // 0=local estimation (no information sharing),
                                // 1= global dissemination (collaboration with neighbors)
 
 // THRESHOLD BASED ALGORITHM PARAMETERS
-#define THRESHOLD		5   // value of homogeneous threshold
-#define STEEPNESS		10  // steepness of threshold cutoff
-#define ABANDON		0 // probability of giving up task (unused)
+#define THRESHOLD		8   // value of homogeneous threshold
+#define STEEPNESS		30  // steepness of threshold cutoff
+#define ABANDON		0   // probability of giving up task (unused)
 #define LOST_THRESHOLD	3   // number of pixels before a target color is considered lost (used to change FSM state)
 #define THRESHOLD_DELTA	1   // TODO valeur arbitraire
 
