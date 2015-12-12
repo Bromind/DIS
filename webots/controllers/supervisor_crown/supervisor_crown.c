@@ -29,8 +29,9 @@
 #define EVENT_PRODUCTIVITY_STEP 0.02  // amount removed from event (out of 1.0) if robot is processing it
 
 // Performance measure
-#define EVENTS_TO_HANDLE 15 //Number of events handled to consider the simulation successful
-#define MAX_DURATION 3 // Number of iterations to do before resetting
+//#define EVENTS_TO_HANDLE 15 //Number of events handled to consider the simulation successful
+#define MAX_DURATION 3 // Number of iterations to do before resetting.
+#define MAX_TIME 300000 // Time (in ms) before resetting
 
 static WbNodeRef rob[ROBOTS];         // References to robots
 static WbFieldRef robTrans[ROBOTS];   // Reference to track the position of the robots
@@ -186,9 +187,10 @@ static int run(int ms) {
 
 
   // Check if iteration over
-  if (events_handled == EVENTS_TO_HANDLE) {
+  if (temp_clock > MAX_TIME) {
 
-    long long int duration = (clock - temp_clock) / 1000; // Duration in seconds
+    //  long long int duration = (clock - temp_clock) / 1000; // Duration in seconds
+    long long int duration = MAX_TIME / 1000; // Duration in seconds
 
     // Events per unit of time
     double metric1 = ((double) events_handled)/((double)duration); // Compute performance
@@ -197,7 +199,10 @@ static int run(int ms) {
     double total_distance = 0;
     for (i = 0; i < ROBOTS; i++) {
       total_distance += distance_travelled[i];
+      distance_travelled[i] = 0;
     }
+
+
     double metric2 = total_distance / events_handled;
 
     mean_perf1 += metric1/MAX_DURATION;
@@ -207,14 +212,15 @@ static int run(int ms) {
     fprintf(outfile, "metric2(%d) = %f;\n", iterations, metric2);
 
 
-    //printf("Robots completed %d tasks in %llis, performance = %f \n", EVENTS_TO_HANDLE, duration, metric1);
-    //printf("Robots travelled %f meters in %llis, performance = %f \n", total_distance, duration, metric2);
+    printf("Robots completed %d tasks in %llis, performance = %f \n", events_handled, duration, metric1);
+    printf("Robots travelled %f meters in %llis, performance = %f \n", total_distance, duration, metric2);
     iterations++;
 
     sleep(1);
     events_handled = 0;
-    temp_clock = clock;
-    if (iterations <= MAX_DURATION) reset();
+    //temp_clock = clock;
+    temp_clock = 0;
+    reset();
   }
 
   // Stop simulating after a certain number of iterations
@@ -246,6 +252,7 @@ static int run(int ms) {
   }
 
   clock+=STEP_SIZE;
+  temp_clock+=STEP_SIZE;
   return STEP_SIZE;
 }
 
@@ -263,8 +270,8 @@ int main(void)
     rob[i] = wb_supervisor_node_get_from_def(aux);
     loc[i] = wb_supervisor_field_get_sf_vec3f(wb_supervisor_node_get_field(rob[i],"translation"));
     initLoc[i][0] = loc[i][0];
-     initLoc[i][1] = loc[i][1];
-      initLoc[i][2] = loc[i][2];
+    initLoc[i][1] = loc[i][1];
+    initLoc[i][2] = loc[i][2];
 
     rot[i] = wb_supervisor_field_get_sf_rotation(wb_supervisor_node_get_field(rob[i],"rotation"));
     initRot[i][0] = rot[i][0];
@@ -272,7 +279,7 @@ int main(void)
     initRot[i][2] = rot[i][2];
     initRot[i][3] = rot[i][3];
   }
-  
+
   reset();
   wb_robot_step(2*STEP_SIZE);
 
