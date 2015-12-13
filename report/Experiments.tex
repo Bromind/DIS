@@ -7,6 +7,16 @@ In order to emit the virtual potential field, the robots are endowed with radio 
 
 \textbf{Implementation:}
 The framework used during the course of the project allowed us to test 3 main approaches. They could be divided in two categories, one being private (static case) and the other being public (dynamic case). In the first case, we considered both homogenous (fixed and identical thresholds among robots) and heterogeneous (adaptive thresholds based on each robot's vision or time spent in search mode) cases. In the second case, we took advantage of the local potential field emissions perceived by the robots to adjust the weights of each color stimulus to improve task allocation and tried both fixed and variable thresholds.
+Simulations were run on the realistic robot simulator WeBots. The agents used are e-pucks robots. The arena configuration can be seen on figure \ref{screenshot}.
+
+\begin{figure}[thpb]
+	\begin{center}
+		\includegraphics[width=8.5cm]{Pictures/Capture.png}
+		\caption{The disposition of the arena with the e-puck robots (in gray/dark green) and the different tasks represented by red, green and blue cylinders. On the top-left corner is displayed the camera image of one of the robots.}
+    \label{screenshot}
+	\end{center}
+	
+\end{figure}
 
 \textbf{Task Allocation Mechanism:}
 For the simulations to be comparable, we used the same Finite State Machine (FSM) for all simulations and all types of algorithms. This FSM is described in Figure \ref{fsm}. The behavior of the robots could be described as follows. All the robots are initialized in the first state ($S1$) that consists in spinning around and processing the image from the camera to determine if task needs to be handled. Once a task is picked, the robot changes state and goes directly towards the task ($S2$). To avoid collisions between robots, obstacle avoidance is added is this state. If the robot happens to lose track of its target (when the stimulus gets lower than a given threshold), it switches back to $S1$. When the robot is close enough to the task, it slows down for a given amount of time to process the task (state $S3$). Once the task is processed, the robot will go back in $S1$.

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/W32TeX) (preloaded format=pdflatex 2015.8.15)  13 DEC 2015 20:15
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/W32TeX) (preloaded format=pdflatex 2015.8.15)  13 DEC 2015 22:05
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -804,73 +804,81 @@ Package biblatex Info: ... file 'Report.bbl' found.
 Package biblatex Info: Reference section=0 on input line 38.
 Package biblatex Info: Reference segment=0 on input line 38.
  ABD: EveryShipout initializing macros (./Introduction.tex)
-(./Experiments.tex [1{c:/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.
-map}
+(./Experiments.tex <Pictures/Capture.png, id=4, 910.15031pt x 511.15968pt>
+File: Pictures/Capture.png Graphic file (type png)
 
+<use Pictures/Capture.png>
+Package pdftex.def Info: Pictures/Capture.png used on input line 14.
+(pdftex.def)             Requested size: 241.84842pt x 135.82324pt.
+LaTeX Font Info:    Try loading font information for U+msa on input line 22.
 
-]
-LaTeX Font Info:    Try loading font information for U+msa on input line 27.
- (c:/texlive/2015/texmf-dist/tex/latex/amsfonts/umsa.fd
+(c:/texlive/2015/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 27.
+LaTeX Font Info:    Try loading font information for U+msb on input line 22.
 
 (c:/texlive/2015/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-))
-(./Results&Discussion.tex [2]
-<Pictures/PrivFixedMetric1.png, id=20, 422.32782pt x 216.81pt>
+) [1{c:/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
+
+
+]) (./Results&Discussion.tex [2 <./Pictures/Capture.png>] [3]
+<Pictures/PrivFixedMetric1.png, id=26, 422.32782pt x 216.81pt>
 File: Pictures/PrivFixedMetric1.png Graphic file (type png)
 
 <use Pictures/PrivFixedMetric1.png>
-Package pdftex.def Info: Pictures/PrivFixedMetric1.png used on input line 31.
+Package pdftex.def Info: Pictures/PrivFixedMetric1.png used on input line 32.
 (pdftex.def)             Requested size: 241.84842pt x 124.15862pt.
 
-<Pictures/PrivFixedMetric2.png, id=22, 422.32782pt x 216.05719pt>
+<Pictures/PrivFixedMetric2.png, id=27, 422.32782pt x 216.05719pt>
 File: Pictures/PrivFixedMetric2.png Graphic file (type png)
 
 <use Pictures/PrivFixedMetric2.png>
-Package pdftex.def Info: Pictures/PrivFixedMetric2.png used on input line 37.
+Package pdftex.def Info: Pictures/PrivFixedMetric2.png used on input line 38.
 (pdftex.def)             Requested size: 241.84842pt x 123.7275pt.
 
-<Pictures/PrivAdaptMetric1.png, id=23, 421.575pt x 214.55156pt>
+<Pictures/PrivAdaptMetric1.png, id=28, 421.575pt x 214.55156pt>
 File: Pictures/PrivAdaptMetric1.png Graphic file (type png)
 
 <use Pictures/PrivAdaptMetric1.png>
-Package pdftex.def Info: Pictures/PrivAdaptMetric1.png used on input line 43.
+Package pdftex.def Info: Pictures/PrivAdaptMetric1.png used on input line 44.
 (pdftex.def)             Requested size: 241.84842pt x 123.08463pt.
 
-<Pictures/PrivAdaptMetric2.png, id=24, 421.575pt x 213.79875pt>
+<Pictures/PrivAdaptMetric2.png, id=29, 421.575pt x 213.79875pt>
 File: Pictures/PrivAdaptMetric2.png Graphic file (type png)
 
 <use Pictures/PrivAdaptMetric2.png>
-Package pdftex.def Info: Pictures/PrivAdaptMetric2.png used on input line 49.
+Package pdftex.def Info: Pictures/PrivAdaptMetric2.png used on input line 50.
 (pdftex.def)             Requested size: 241.84842pt x 122.65276pt.
 
-<Pictures/PrivSpecMetric1.png, id=25, 420.82219pt x 212.29312pt>
+<Pictures/PrivSpecMetric1.png, id=30, 420.82219pt x 212.29312pt>
 File: Pictures/PrivSpecMetric1.png Graphic file (type png)
 
 <use Pictures/PrivSpecMetric1.png>
-Package pdftex.def Info: Pictures/PrivSpecMetric1.png used on input line 55.
+Package pdftex.def Info: Pictures/PrivSpecMetric1.png used on input line 56.
 (pdftex.def)             Requested size: 241.84842pt x 122.00604pt.
 
-<Pictures/PrivSpecMetric2.png, id=26, 421.575pt x 210.7875pt>
+<Pictures/PrivSpecMetric2.png, id=31, 421.575pt x 210.7875pt>
 File: Pictures/PrivSpecMetric2.png Graphic file (type png)
 
 <use Pictures/PrivSpecMetric2.png>
-Package pdftex.def Info: Pictures/PrivSpecMetric2.png used on input line 61.
+Package pdftex.def Info: Pictures/PrivSpecMetric2.png used on input line 62.
 (pdftex.def)             Requested size: 241.84842pt x 120.92526pt.
-File: Pictures/PrivAdaptMetric1.png Graphic file (type png)
- <use Pictures/PrivAdaptMetric1.png>
-Package pdftex.def Info: Pictures/PrivAdaptMetric1.png used on input line 67.
-(pdftex.def)             Requested size: 241.84842pt x 123.08463pt.
-File: Pictures/PrivAdaptMetric2.png Graphic file (type png)
 
-<use Pictures/PrivAdaptMetric2.png>
-Package pdftex.def Info: Pictures/PrivAdaptMetric2.png used on input line 73.
-(pdftex.def)             Requested size: 241.84842pt x 122.65276pt.
-) (./Conclusion.tex) [3 <./Pictures/PrivFixedMetric1.png> <./Pictures/PrivFixed
-Metric2.png> <./Pictures/PrivAdaptMetric1.png>]
+<Pictures/PubMetric1.png, id=32, 421.575pt x 211.54031pt>
+File: Pictures/PubMetric1.png Graphic file (type png)
+
+<use Pictures/PubMetric1.png>
+Package pdftex.def Info: Pictures/PubMetric1.png used on input line 68.
+(pdftex.def)             Requested size: 241.84842pt x 121.35713pt.
+
+<Pictures/PubMetric2.png, id=33, 421.575pt x 210.7875pt>
+File: Pictures/PubMetric2.png Graphic file (type png)
+
+<use Pictures/PubMetric2.png>
+Package pdftex.def Info: Pictures/PubMetric2.png used on input line 74.
+(pdftex.def)             Requested size: 241.84842pt x 120.92526pt.
+) (./Conclusion.tex)
 
 ** Conference Paper **
 Before submitting the final camera ready copy, remember to:
@@ -882,32 +890,39 @@ Before submitting the final camera ready copy, remember to:
  uses only Type 1 fonts and that every step in the generation
  process uses the US letter (8.5in X 11in) paper size.
 
-[4 <./Pictures/PrivAdaptMetric2.png> <./Pictures/PrivSpecMetric1.png> <./Pictur
-es/PrivSpecMetric2.png>] (./Report.aux)
+[4 <./Pictures/PrivFixedMetric1.png> <./Pictures/PrivFixedMetric2.png> <./Pictu
+res/PrivAdaptMetric1.png> <./Pictures/PrivAdaptMetric2.png> <./Pictures/PrivSpe
+cMetric1.png>] [5
+
+ <./Pictures/PrivSpecMetric2.png> <./Pictures/PubMetric1.png> <./Pictures/PubMe
+tric2.png>] (./Report.aux)
 Package logreq Info: Writing requests to 'Report.run.xml'.
 \openout1 = `Report.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 18405 strings out of 493091
- 350862 string characters out of 6138531
- 748920 words of memory out of 5000000
- 21567 multiletter control sequences out of 15000+600000
- 35842 words of font info for 71 fonts, out of 8000000 for 9000
+ 18580 strings out of 493091
+ 354909 string characters out of 6138531
+ 749937 words of memory out of 5000000
+ 21732 multiletter control sequences out of 15000+600000
+ 38942 words of font info for 83 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 55i,9n,54p,1313b,934s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 55i,9n,68p,1382b,936s stack positions out of 5000i,500n,10000p,200000b,80000s
 {c:/texlive/2015/texmf-dist/fonts/enc/dvips/base/8r.enc}<c:/texlive/2015/texm
 f-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><c:/texlive/2015/texmf-dist/fo
-nts/type1/public/amsfonts/cm/cmmi7.pfb><c:/texlive/2015/texmf-dist/fonts/type1/
-public/amsfonts/cm/cmr10.pfb><c:/texlive/2015/texmf-dist/fonts/type1/public/ams
-fonts/cm/cmsy10.pfb><c:/texlive/2015/texmf-dist/fonts/type1/urw/times/utmb8a.pf
-b><c:/texlive/2015/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb><c:/texlive/201
-5/texmf-dist/fonts/type1/urw/times/utmr8a.pfb><c:/texlive/2015/texmf-dist/fonts
-/type1/urw/times/utmri8a.pfb>
-Output written on Report.pdf (4 pages, 120514 bytes).
+nts/type1/public/amsfonts/cm/cmmi6.pfb><c:/texlive/2015/texmf-dist/fonts/type1/
+public/amsfonts/cm/cmmi7.pfb><c:/texlive/2015/texmf-dist/fonts/type1/public/ams
+fonts/cm/cmmi8.pfb><c:/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/c
+mr10.pfb><c:/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb><c
+:/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><c:/texlive
+/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb><c:/texlive/2015/texm
+f-dist/fonts/type1/urw/times/utmb8a.pfb><c:/texlive/2015/texmf-dist/fonts/type1
+/urw/times/utmbi8a.pfb><c:/texlive/2015/texmf-dist/fonts/type1/urw/times/utmr8a
+.pfb><c:/texlive/2015/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on Report.pdf (5 pages, 1032398 bytes).
 PDF statistics:
- 66 PDF objects out of 1000 (max. 8388607)
- 39 compressed objects within 1 object stream
+ 91 PDF objects out of 1000 (max. 8388607)
+ 53 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 43 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 58 words of extra memory for PDF output out of 10000 (max. 10000000)
 
