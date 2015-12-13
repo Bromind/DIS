@@ -1,15 +1,15 @@
 [0] Config.pm:324> INFO - This is Biber 2.1
-[1] Config.pm:327> INFO - Logfile is 'Report.blg'
-[59] biber-MSWIN:273> INFO - === %a %b %e, %Y, %H:%M:%S
-[59] Biber.pm:333> INFO - Reading 'Report.bcf'
-[368] Biber.pm:645> INFO - Found 3 citekeys in bib section 0
+[1] Config.pm:327> INFO - Logfile is 'report.blg'
+[65] biber-MSWIN:273> INFO - === %a %b %e, %Y, %H:%M:%S
+[65] Biber.pm:333> INFO - Reading 'report.bcf'
+[365] Biber.pm:645> INFO - Found 3 citekeys in bib section 0
 [394] Biber.pm:2977> INFO - Processing section 0
-[420] Biber.pm:3115> INFO - Looking for bibtex format file 'Report.bib' for section 0
-[430] bibtex.pm:1021> INFO - Decoding LaTeX character macros into UTF-8
-[436] bibtex.pm:895> INFO - Found BibTeX data source 'Report.bib'
-[672] UCollate.pm:66> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
-[675] UCollate.pm:66> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
-[678] Biber.pm:2854> INFO - Sorting list 'nty' of type 'entry' with scheme 'nty' and locale 'en-US'
-[680] Biber.pm:2858> INFO - No sort tailoring available for locale 'en-US'
-[686] bbl.pm:505> INFO - Writing 'Report.bbl' with encoding 'ascii'
-[711] bbl.pm:596> INFO - Output to Report.bbl
+[419] Biber.pm:3115> INFO - Looking for bibtex format file 'Report.bib' for section 0
+[431] bibtex.pm:1021> INFO - Decoding LaTeX character macros into UTF-8
+[437] bibtex.pm:895> INFO - Found BibTeX data source 'Report.bib'
+[496] UCollate.pm:66> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[498] UCollate.pm:66> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[505] Biber.pm:2854> INFO - Sorting list 'nty' of type 'entry' with scheme 'nty' and locale 'en-US'
+[508] Biber.pm:2858> INFO - No sort tailoring available for locale 'en-US'
+[514] bbl.pm:505> INFO - Writing 'report.bbl' with encoding 'ascii'
+[542] bbl.pm:596> INFO - Output to report.bbl
