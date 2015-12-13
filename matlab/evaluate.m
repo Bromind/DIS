@@ -2,8 +2,8 @@ clc;
 close all;
 
 % Concatenate data
-perf1 = [privFixed1_metric1' privFixed2_metric1' privFixed3_metric1' privFixed4_metric1' privFixed5_metric1' privFixed6_metric1' privVar1_metric1' privVar2_metric1' privVar3_metric1' privVar4_metric1' privVar5_metric1' privVar6_metric1' privVar7_metric1' privVar8_metric1'];
-perf2 = [privFixed1_metric2' privFixed2_metric2' privFixed3_metric2' privFixed4_metric2' privFixed5_metric2' privFixed6_metric2' privVar1_metric2' privVar2_metric2' privVar3_metric2' privVar4_metric2' privVar5_metric2' privVar6_metric2' privVar7_metric2' privVar8_metric2'];
+perf1 = [privFixed1_metric1' privFixed2_metric1' privFixed3_metric1' privFixed4_metric1' privFixed5_metric1' privFixed6_metric1' privVar1_metric1' privVar2_metric1' privVar3_metric1' privVar4_metric1' privVar5_metric1' privVar6_metric1' privVar7_metric1' privVar8_metric1' pubVar1_metric1' pubVar2_metric1' pubVar3_metric1' pubVar4_metric1' pubVar5_metric1' pubVar6_metric1'];
+perf2 = [privFixed1_metric2' privFixed2_metric2' privFixed3_metric2' privFixed4_metric2' privFixed5_metric2' privFixed6_metric2' privVar1_metric2' privVar2_metric2' privVar3_metric2' privVar4_metric2' privVar5_metric2' privVar6_metric2' privVar7_metric2' privVar8_metric2' pubVar1_metric2' pubVar2_metric2' pubVar3_metric2' pubVar4_metric2' pubVar5_metric2' pubVar6_metric2'];
 
 perf3 = perf1.*180;
 % perf3 = perf1.*(1-perf2).*(1-perf2).*180;
