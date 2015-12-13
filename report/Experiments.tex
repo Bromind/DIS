@@ -15,11 +15,11 @@ Simulations were run on the realistic robot simulator WeBots. The agents used ar
 		\caption{The disposition of the arena with the e-puck robots (in gray/dark green) and the different tasks represented by red, green and blue cylinders. On the top-left corner is displayed the camera image of one of the robots.}
     \label{screenshot}
 	\end{center}
-	
+
 \end{figure}
 
 \textbf{Task Allocation Mechanism:}
-For the simulations to be comparable, we used the same Finite State Machine (FSM) for all simulations and all types of algorithms. This FSM is described in Figure \ref{fsm}. The behavior of the robots could be described as follows. All the robots are initialized in the first state ($S1$) that consists in spinning around and processing the image from the camera to determine if task needs to be handled. Once a task is picked, the robot changes state and goes directly towards the task ($S2$). To avoid collisions between robots, obstacle avoidance is added is this state. If the robot happens to lose track of its target (when the stimulus gets lower than a given threshold), it switches back to $S1$. When the robot is close enough to the task, it slows down for a given amount of time to process the task (state $S3$). Once the task is processed, the robot will go back in $S1$.
+For the simulations to be comparable, we used the same Finite State Machine (FSM) for all simulations and all types of algorithms. This FSM is described in Figure \ref{fsm}. The behavior of the robots could be described as follows. All the robots are initialized in the first state ($S1$) that consists in spinning around and processing the image from the camera to determine if task needs to be handled. Once a task is picked, the robot changes state and goes directly towards the task ($S2$). To avoid collisions between robots, obstacle avoidance is added is this state. If the robot happens to lose track of its target (when the stimulus gets lower than a given threshold), it switches back to $S1$. When the robot is close enough to the task, it slows down for a given amount of time to process the task ($S3$). Once the task is processed, the robot will go back in $S1$.
 
 \begin{figure}[thpb]
 	\begin{center}
@@ -44,19 +44,19 @@ For the simulations to be comparable, we used the same Finite State Machine (FSM
 			\fill [black] (21.07,-22.84) -- (21.8,-23.44) -- (21.92,-22.45);
 			\draw (45.05,-23.77) node [below] {$Task\mbox{ }lost$};
 		\end{tikzpicture}
-		\caption{The finite-state-machine of the robots}
+		\caption{The Finite-State-Machine of the robots}
     \label{fsm}
 	\end{center}
-	
+
 \end{figure}
 
-\subsection{Private, Fixed-Threshold Algorithm}
+\subsection{Private, Fixed Threshold-based Algorithm}
 In this first experiment, the same response threshold is assigned to each robot and identical for each color (no specialization). Various agent behaviors are obtained thanks to the local perception of the environment and the private assessment of the demand. We considered both the deterministic and probabilistic task allocation. In the latter, the robots where using a sigmoid function to determine if a given task should be processed or not.
 
-\subsection{Private, Adaptive-Threshold Algorithm}
+\subsection{Private, Adaptive Threshold-based Algorithm}
 The next case considers adaptive thresholds to improve the robustness of the task allocation strategy. As the number of robots is not equal nor a multiple of the number of task categories, we chose to consider two adaptation methods. The first one considers the robots to be "colorblind", the threshold is the same for each color and the adaptation consists in lowering the value of all the thresholds as the robots remain in search mode (and conversely, increasing the value if a task is performed). The second one proceeds to a specialization of the robots as they perform a given type of task repeatedly. This approach can be combined with the previous one by lowering the thresholds of the robots if too much time is spent in search mode.
 
-\subsection{Public, Fixed \& Variable Threshold Algorithm}
+\subsection{Public, Fixed \& Variable Threshold-based Algorithm}
 The final approach adds communication between the robots to share information about the tasks identified through vision. The method consists in using the information received through radio communication to change the weights of the color stimuli so as to avoid selecting the same task as another robot.
 
 In order to neglect the influence of neighbors being too far from a robot position, we chose to limit the maximum range at which the emissions were perceived. The value was set so that the corresponding area of reception of a given robot was one fifth of the total area of the arena. Thus, each robot was more inclined to work in its own area and could deal with neighbors entering the area and likely to choose the same task. Furthermore, we chose to modify the saturate the signal strength of the received emissions. Indeed, for the robot to react sufficiently fast if it picked the same task as its neighbor, the signal strength had to be limited to a maximum value before normalization of the received perceptions. This assumption somehow goes beyond the initial idea of potential field but is perfectly workable using radio communications. It should also be noted that the model adopted here could be applicable to really noisy and imprecise receiver.

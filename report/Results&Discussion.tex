@@ -6,11 +6,11 @@ The purpose of this project is to assess the benefit of dynamic, or adaptive, th
 \begin{itemize}
 	\item The number of tasks processed within a time period ($N/T$)
 	\item One minus the distance traveled per processed task \\ ($1-d/N$)
-\end{itemize}  
-Since it is better to travel less per processed task, the transformation above was necessary so that all agents want to maximize those two metrics. 
+\end{itemize}
+Since it is better to travel less per processed task, the transformation above was necessary so that all agents want to maximize those two metrics.
 While the former gives us an idea of the average rate at which actions are performed, the second embeds two notions at the same time: the distribution of workload among robots and the efficiency of the allocation in terms of distance from robots to tasks, which can be useful on real robots where the power supply is limited.
 
-\subsection{Private Fixed-Threshold Task Allocation}
+\subsection{Private Fixed Threshold-based Task Allocation}
 For these experiments, we compare the performances obtained for two different fixed thresholds in both deterministic and probabilistic cases. In the probabilistic case, a sigmoid function - computed from the threshold $\theta$ and the stimulus $\sigma$ - is used to proceed to the task allocation.
 
 $$
@@ -32,7 +32,7 @@ Figure \ref{figure1} and Figure \ref{figure2} shows the results obtained through
       \label{figure2}
    \end{figure}
 
-\subsection{Private Variable-Threshold Task Allocation}
+\subsection{Private Variable Threshold-based Task Allocation}
 The fixed-threshold approach does not allow the robots to travel far away from their latest position. Consequently, the task-allocation showed poor performances when the tasks were massively spawned on one side of the arena. Hence, we tried to endow the robots with the capability of adapting their threshold based on the time they spend searching for a task to handle. At each time step spent in search mode, the threshold value is decremented by $\delta_{\theta}$. Each time a task is processed, the threshold is incremented by 1. As this function is computed at each time step (i.e. every 64 ms), its value must be low so that the adaptation is not too fast (long distances will be traveled) or too slow (time will be wasted in search mode).
 
 Although the poor quality and the limited field of view of the robot's vision allows for some noise (heterogeneity) and randomness to be added to the process, they do not prevent the robot from choosing the same task. Since the tasks were categorized, we tried to add specialization mechanism to thwart this tendency. Each time a task of a given category was performed, its corresponding threshold was decreased by a specified value and the other thresholds were increased by a different value.
@@ -65,7 +65,7 @@ The results are shown in Figure \ref{figure3}, Figure \ref{figure4}, Figure \ref
       \label{figure6}
    \end{figure}
 
-\subsection{Public Fixed \& Variable Threshold Task Allocation}
+\subsection{Public Fixed \& Variable Threshold-based Task Allocation}
 In order to allow the robots to drop a chosen task if a neighbor is likely to be heading towards it at the same time, we endowed the robots with communication capabilities in the form of potential fields emitted through the radio emitter/receiver. This potential field conveyed the stimulus corresponding to the chosen task color. With this additional information the robots were able to adapt their stimuli, according to equation (1).
 
 We tested both adaptive and static setups to show the efficiency of the first adaptation approach in the public case. The parameters used were the ones who gave the best results thus far (i.e. $\theta = 5$, $\delta_{\theta} = 0.01$). Furthermore, as the probabilistic case did not yield significant improvements over the deterministic in the public case, we only present the results in the latter scenario.

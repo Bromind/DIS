@@ -1,7 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * file:        epuck_crown.c
- * description: Base project with 3-channel emissions and 3 types of tasks
- *
+ * description: Event handling using static & dynamic task allocation strategies
+ * authors: 		Brice Platerrier, Martin Vassor, Arnaud Wald
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
