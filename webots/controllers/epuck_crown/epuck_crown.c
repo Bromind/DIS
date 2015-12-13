@@ -25,7 +25,7 @@
 //#define DEBUG 1
 #define TIME_STEP 64
 #define FLOCK_SIZE 5
-
+//#define DEBUG
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* e-Puck parameters */
@@ -38,36 +38,37 @@
 #define MAXSPEED		1000
 
 // Additional simulation parameters (see receive_local_emission)
-#define MAX_RANGE 0.6 // maximum range of the perception of neighbor emissions
+#define MAX_RANGE 0.4 // maximum range of the perception of neighbor emissions
 #define MIN_RANGE 0.2 // minimal distance under which the color perception saturates
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* Problem Description */
 
 // PROBLEM TYPE
-#define DETERMINISTIC	0   // 0= infinite steepness 1= above fitness used
+#define DETERMINISTIC	1  // 0= infinite steepness 1= above fitness used
 #define ADAPTIVE		1   // 0=fixed, 1=adaptive thresholds
-#define PUBLIC		0   // 0=local estimation (no information sharing),
+#define PUBLIC		1   // 0=local estimation (no information sharing),
                                // 1= global dissemination (collaboration with neighbors)
 
 // THRESHOLD BASED ALGORITHM PARAMETERS
-#define THRESHOLD		10   // value of homogeneous threshold
+#define THRESHOLD		8  // value of homogeneous threshold
 #define STEEPNESS		30  // steepness of threshold cutoff
 #define ABANDON		0   // probability of giving up task (unused)
 #define LOST_THRESHOLD	3   // number of pixels before a target color is considered lost (used to change FSM state)
 #define THRESHOLD_DELTA	0.01   // TODO valeur arbitraire
-#define ALPHA			0.3 // weight of the received neighbors perception (global perception)
-#define BETA	 		0.1 // additional weight given to vision (local perception)
+#define ALPHA		1 // weight of the received neighbors perception (global perception)
+#define BETA	 	0.1 // additional weight given to vision (local perception)
 
 // COLORS
 #define NB_COLORS		3   // Number of colors
-#define COLOR_BLIND	0   // 1=colors are ignored  0=colors are considered as different tasks
+#define COLOR_BLIND	1   // 1=colors are ignored  0=colors are considered as different tasks
 //#define NO_COLOR               -1 // Nothing special detected on screen (robot in front / gone through cylinder / wall)
 typedef enum {NO_COLOR=-1, RED, GREEN, BLUE} color;
 
 // TASKS
-#define PERFORM_THRESHOLD  48  // Number of pixels to consider the robot close enough to the cylinder
+#define PERFORM_THRESHOLD   48 // Number of pixels to consider the robot close enough to the cylinder
 #define STEPS_IDLE         120 // Number of steps while the robot stops to perform a task
+#define STEPS_SEARCH        18 // Number of steps spent in search mode (used for public case)
 
 typedef enum {SEARCH, GOTO_TASK, STOP_MOVE} fsm_state;
 
@@ -86,13 +87,14 @@ int robot_id;                       // Unique robot ID
 // FSM
 fsm_state state = SEARCH; // state of FSM: either the robot is in state "searching" or state "going towards a color"
 fsm_state previous_state = SEARCH;
-int steps = 0; // Number of steps to stay in perform state
+int steps = 0; // Number of steps to stay in perform state or search
+
 // Colors & Thresholds
 int chosen_color = NO_COLOR; // color chosen by the robot
 int pos_color[NB_COLORS] = {0, 0, 0}; // average position of the chosen cylinder (camera)
 int max_size_color[NB_COLORS]; // size of largest colored cylinders for each color (camera)
 float threshold[NB_COLORS] = {THRESHOLD, THRESHOLD, THRESHOLD}; // stores the thresholds corresponding to the colors
-int stimulus[NB_COLORS]; // stimuli corresponding to the colors
+float stimulus[NB_COLORS]; // stimuli corresponding to the colors
 
 // Motors speed
 int msr, msl;
@@ -215,17 +217,19 @@ void updateRobot(){
 		{
 			// We received the "normalized average stimulus" modified by senders distances.
 			// We decrease our stimulus when this perception increases.
-			stimulus[i] = stimulus[i]*(1 + BETA - ALPHA*rgb_perception[i]);
+  			stimulus[i] += BETA*stimulus[i] - ALPHA*rgb_perception[i]*WIDTH;
+  			if(stimulus[i]<0) stimulus[i] = 0;
+  			if(stimulus[i]>max_size_color[i]) stimulus[i] = max_size_color[i];
 		}
-		// Send our local datas.
-		send_local_emission();
+		
+		
 #ifdef DEBUG
 		if(robot_id == 5)
 		{
 			printf("#%i max values {%i, %i, %i}\n", robot_id, max_size_color[0], max_size_color[1], max_size_color[2]);
 			printf("#%i received {%f, %f, %f}\n", robot_id, rgb_perception[0], rgb_perception[1], rgb_perception[2]);
 			printf("#%i send {%f, %f, %f}\n", robot_id, rgb_emission[0], rgb_emission[1], rgb_emission[2]);
-			printf("#%i stimulus {%i, %i, %i}\n", robot_id, stimulus[0], stimulus[1], stimulus[2]);
+			printf("#%i stimulus {%f, %f, %f}\n", robot_id, stimulus[0], stimulus[1], stimulus[2]);
 #ifdef ADAPTIVE
 			printf("#%i thresholds {%f, %f, %f}\n", robot_id, threshold[0], threshold[1], threshold[2]);
 #endif
@@ -240,13 +244,13 @@ void updateRobot(){
 	switch (state) {
 		case SEARCH :
 			rand = rnd();
-			if(checkThreshold(rand, RED)){
+			if(checkThreshold(rand, RED) && steps > STEPS_SEARCH){
 				chosen_color = RED;
 			}
-			else if(checkThreshold(rand, GREEN)){
+			else if(checkThreshold(rand, GREEN) && steps > STEPS_SEARCH){
 				chosen_color = GREEN;
 			}
-			else if(checkThreshold(rand, BLUE)){
+			else if(checkThreshold(rand, BLUE) && steps > STEPS_SEARCH){
 				chosen_color = BLUE;
 			}
 			else {
@@ -255,11 +259,20 @@ void updateRobot(){
 			// if cylinder chosen, go chromataxis mode (GOTO_TASK)
 			if(chosen_color != NO_COLOR){
 				state = GOTO_TASK;
+				steps = 0;
 			}
+			else{
+                    		steps++;
+                           }
+    			
 			break;
 
 			// if in chromataxis mode, check if cylinder was lost
 		case GOTO_TASK :
+		
+          		// Send our local datas.
+                           send_local_emission();
+                           
 			// Check if color is still in field of view
 			if(chosen_color != NO_COLOR && stimulus[chosen_color] < LOST_THRESHOLD){
 				chosen_color = NO_COLOR;
@@ -471,8 +484,8 @@ void send_local_emission() {
 	char buffer[255];
 	int i;
 	// compute emission strength for each task typedef
-	for (i=0; i<3; i++)
-		rgb_emission[i] = (float)max_size_color[i] / WIDTH; // We send our normalized stimulus for each color.
+	//for (i=0; i<3; i++)
+	rgb_emission[chosen_color] = (float)max_size_color[chosen_color] / WIDTH; // We send our normalized stimulus for each color.
 
 	// send emission
 	sprintf(buffer, "r:%f g:%f b:%f", rgb_emission[0], rgb_emission[1], rgb_emission[2]);
