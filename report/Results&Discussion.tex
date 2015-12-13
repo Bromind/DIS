@@ -2,7 +2,13 @@
 In this section, we present and compare the results gathered from all experiments at sub-microscopic modeling level. Each task allocation run, for a team of 5 robots placed in a 160X160 arena, lasted 3 minutes (simulated time) and 40 runs were carried out for each simulation setup. The colored bars stand for the average performance and the error bars represent the standard deviations among runs. Different parameters were tuned for each case scenario and are described in the subsequent subsections. Furthermore, unless otherwise stated, our stimuli were the number of pixels (from the processed image) corresponding to the closest task (cylinder) for each color.
 
 \subsection{Performance Metrics}
-The purpose of this project is to assess the benefit of dynamic, or adaptive, thresholds-based algorithms over static ones (whether it be the homogeneous or heterogeneous case). To do so, we introduce two performance metrics, one being the number of tasks processed within a time period and the other one being the average distance traveled per processed task. While the former gives us an idea of the average rate at which actions are performed, the latter embeds two notions at the same time: the distribution of workload among robots and the efficiency of the allocation in terms of distance from robots to tasks.
+The purpose of this project is to assess the benefit of dynamic, or adaptive, thresholds-based algorithms over static ones (whether it be the homogeneous or heterogeneous case). To do so, we introduce two performance metrics:
+\begin{itemize}
+	\item The number of tasks processed within a time period ($N/T$)
+	\item One minus the distance traveled per processed task \\ ($1-d/N$)
+\end{itemize}  
+Since it is better to travel less per processed task, the transformation above was necessary so that all agents want to maximize those two metrics. 
+While the former gives us an idea of the average rate at which actions are performed, the second embeds two notions at the same time: the distribution of workload among robots and the efficiency of the allocation in terms of distance from robots to tasks, which can be useful on real robots where the power supply is limited.
 
 \subsection{Private Fixed-Threshold Task Allocation}
 For these experiments, we compare the performances obtained for two different fixed thresholds in both deterministic and probabilistic cases. In the probabilistic case, a sigmoid function - computed from the threshold $\theta$ and the stimulus $\sigma$ - is used to proceed to the task allocation.
