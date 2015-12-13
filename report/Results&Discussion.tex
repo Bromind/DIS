@@ -1,7 +1,30 @@
 \section{Results \& Discussion}
+In this section, we present and compare the results gathered from all experiments at sub-microscopic modeling level. Each task allocation run, for a team of 5 robots placed in a 160X160 arena, lasted 3 minutes (simulated time) and 40 runs were carried out for each simulation setup. The colored bars stand for the average performance and the error bars represent the standard deviations among runs. Different parameters were tuned for each case scenario and are described in the subsequent subsections. Furthermore, unless otherwise stated, our stimuli were the number of pixels (from the processed image) corresponding to the closest task (cylinder) for each color.
 
 \subsection{Performance Metrics}
 The purpose of this project is to assess the benefit of dynamic, or adaptive, thresholds-based algorithms over static ones (whether it be the homogeneous or heterogeneous case). To do so, we introduce two performance metrics, one being the number of tasks processed within a time period and the other one being the average distance traveled per processed task. While the former gives us an idea of the average rate at which actions are performed, the latter embeds two notions at the same time: the distribution of workload among robots and the efficiency of the allocation in terms of distance from robots to tasks.
+[PUT THE EQUATIONS HERE OR PUT THE EQUATION OF AGGREGATED PERFORMANCE METRICS]
+
+\subsection{Private Fixed-Threshold Task Allocation}
+For these experiments, we compare the performances obtained for two different fixed thresholds in both deterministic and probabilistic cases. In the probabilistic case, a sigmoid function - computed from the threshold $\theta$ and the stimulus $\sigma$ - is used to proceed to the task allocation.
+
+$$
+F(\sigma) = \sigma^n/(\theta^n + \sigma^n) \eqno{(2)}
+$$
+
+\ref{figure1} and \ref{figure2} shows the results obtained through the simulation of a private fixed-threshold task allocation scheme. As it can be seen, in the case of fixed thresholds and deterministic responses, higher values of thresholds usually mean that less task will be performed and yield really poor performances. Consequently, only a few robots are processing the tasks and thus travel larger distances for a given number of task (see (a) and (b)). In the probabilistic case, the robots are more or less inclined to choose tasks that are further away. A sufficiently low steepness allows for the larger threshold to be compensated (see (c) and (d)). However if the steepness of our sigmoid function gets too high, the performances plummet and are comparable to the deterministic case (see (e) and (f)).
+
+\subsection{Private Variable-Threshold Task Allocation}
+The fixed-threshold approach does not allow the robots to travel far away from their latest position. Consequently, the task-allocation showed poor performances when the tasks were massively spawned on one side of the arena. Hence, we tried to endow the robots with the capability of adapting their threshold based on the time they spend searching for a task to handle. At each time step spent in search mode, the threshold value is decremented by $\delta_{\theta}$. Each time a task is processed, the threshold is incremented by 1. As this function is computed at each time step (i.e. every 64 ms), its value must be low so that the adaptation is not too fast (long distances will be traveled) or too slow (time will be wasted in search mode).
+
+Although the poor quality and the limited field of view of the robot's vision allows for some noise (heterogeneity) and randomness to be added to the process, they do not prevent the robot from choosing the same task. Since the tasks were categorized, we tried to add specialization mechanism to thwart this tendency. Each time a task of a given category was performed, its corresponding threshold was decreased by a specified value and the other thresholds were increased by a different value.
+
+The results are shown in \ref{figure3}, \ref{figure4}, \ref{figure5} and \ref{figure6}. From \ref{figure3} and \ref{figure4}, we can infer that the number of task processed per time unit is not significantly influenced by the speed of the adaptation process. On the flip side, the second performance metric suffers from the unreasonably low threshold and show that a larger distance was traveled by the robots. From \ref{figure5} and \ref{figure6}, we can conclude that the specialization process is not really adapted to our case study. Indeed, the specialization implies that a higher distance is traveled by the robots on average and the number of tasks handled per time unit greatly decreases. This phenomenon is emphasized due to the number of robots being greater than the number of types of tasks. In an attempt to improve the performances, we also tried to mix the first adaptive approach with the specialization mechanism. As it can be seen in \ref{figure5} and \ref{figure6}, the number of task handled is then significantly higher but the second performance metric results still show that a large distance was traveled. In the remainder of the project, the specialization mechanism was abandoned in favor of the first, and only the first, method.
+
+\subsection{Private Fixed \& Variable Threshold Task Allocation}
+In order to allow the robots to drop a chosen task if a neighbor is likely to be heading towards it at the same time, we endowed the robots with communication capabilities in the form of potential fields emitted through the radio emitter/receiver. This potential field conveyed the stimulus corresponding to the chosen task color. With this additional information the robots were able to adapt their stimuli, according to equation (1).
+
+
 
    \begin{figure}[thpb]
       \centering
@@ -51,6 +74,3 @@ The purpose of this project is to assess the benefit of dynamic, or adaptive, th
       \caption{Distance traveled per event handled for the public, adaptive-thresholds algorithms}
       \label{figure8}
    \end{figure}
-
-
-[ EXPERIMENT 1: WE COULD TRY DIFFERENT THRESHOLD VALUES AND COMPARE PERFORMANCES | EXPERIMENT 2: WE COULD TRY DIFFERENT ADAPTATION MECHANISM (VISION OR TIME IN SEARCH MODE = COLORBLIND) AND COMPARE RESULTS | EXPERIMENT 3: WE COULD TRY DIFFERENT ADAPTATION FUNCTION FOR STIMULI AND COMPARE RESULTS | LAST PART: COMPARE ALL ALGORITHMS WITH BEST PERFORMANCE]
