@@ -9,7 +9,36 @@ In order to emit the virtual potential field, the robots are endowed with radio 
 The framework used during the course of the project allowed us to test 3 main approaches. They could be divided in two categories, one being private (static case) and the other being public (dynamic case). In the first case, we considered both homogenous (fixed and identical thresholds among robots) and heterogeneous (adaptive thresholds based on each robot's vision or time spent in search mode) cases. In the second case, we took advantage of the local potential field emissions perceived by the robots to adjust the weights of each color stimulus to improve task allocation and tried both fixed and variable thresholds.
 
 \textbf{Task Allocation Mechanism:}
-For the simulations to be comparable, we used the same Finite State Machine (FSM) for all simulations and all types of algorithms. The behavior of the robots could be described as follows. All the robots are initialized in the first state that consists in spinning around and processing the image from the camera to determine if task needs to be handled. Once a task is picked, the robot changes state and goes directly towards the task (to avoid collisions between robots, obstacle avoidance is added is this state). If the robot happens to lose track of its target (when the stimulus gets lower than a given threshold), it switches back to the search state. When the robot is close enough to the task, it slows down for a given amount of time to process the task. Once the task is processed, the robot will go back in search state.
+For the simulations to be comparable, we used the same Finite State Machine (FSM) for all simulations and all types of algorithms. This FSM is described in Figure \ref{fsm}. The behavior of the robots could be described as follows. All the robots are initialized in the first state ($S1$) that consists in spinning around and processing the image from the camera to determine if task needs to be handled. Once a task is picked, the robot changes state and goes directly towards the task ($S2$). To avoid collisions between robots, obstacle avoidance is added is this state. If the robot happens to lose track of its target (when the stimulus gets lower than a given threshold), it switches back to $S1$. When the robot is close enough to the task, it slows down for a given amount of time to process the task (state $S3$). Once the task is processed, the robot will go back in $S1$.
+
+\begin{figure}[thpb]
+	\begin{center}
+		\begin{tikzpicture}[scale=0.1]
+			\tikzstyle{every node}+=[inner sep=0pt]
+			\draw [black] (18.1,-22.4) circle (3);
+			\draw (18.1,-22.4) node {$S1$};
+			\draw [black] (65.2,-15.2) circle (3);
+			\draw (65.2,-15.2) node {$S2$};
+			\draw [black] (48.5,-49.5) circle (3);
+			\draw (48.5,-49.5) node {$S3$};
+			\draw [black] (66.396,-17.949) arc (19.90503:-71.82612:23.863);
+			\fill [black] (51.4,-48.75) -- (52.32,-48.97) -- (52.01,-48.02);
+			\draw (66.12,-37.6) node [right] {$Arrived$};
+			\draw [black] (45.53,-49.914) arc (-85.42932:-178.00132:25.487);
+			\fill [black] (18.03,-25.4) -- (17.56,-26.21) -- (18.56,-26.18);
+			\draw (19.74,-44.02) node [below] {$Task\mbox{ }performed$};
+			\draw [black] (20.293,-20.354) arc (130.86729:66.51532:40.086);
+			\fill [black] (62.5,-13.9) -- (61.96,-13.13) -- (61.56,-14.04);
+			\draw (36.9,-9.67) node [above] {$Color\mbox{ }chosen$};
+			\draw [black] (62.5,-16.506) arc (-65.31733:-97.30006:76.07);
+			\fill [black] (21.07,-22.84) -- (21.8,-23.44) -- (21.92,-22.45);
+			\draw (45.05,-23.77) node [below] {$Task\mbox{ }lost$};
+		\end{tikzpicture}
+		\caption{The finite-state-machine of the robots}
+    \label{fsm}
+	\end{center}
+	
+\end{figure}
 
 \subsection{Private, Fixed-Threshold Algorithm}
 In this first experiment, the same response threshold is assigned to each robot and identical for each color (no specialization). Various agent behaviors are obtained thanks to the local perception of the environment and the private assessment of the demand. We considered both the deterministic and probabilistic task allocation. In the latter, the robots where using a sigmoid function to determine if a given task should be processed or not.
@@ -30,4 +59,4 @@ $$
 \sigma_{new}(i) = \sigma_{prev}(i)*(1 + \beta) - \alpha*R(i) \eqno{(1)}
 $$
 
-Where $\sigma_{new}$ and $\sigma_{prev}$ are the new and previous stimulus values and $R(i)$ is the normalized reception of color $i$.
+where $\sigma_{new}$ and $\sigma_{prev}$ are the new and previous stimulus values and $R(i)$ is the normalized reception of color $i$.
