@@ -1,7 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * file:        epuck_crown.c
- * description: Base project with 3-channel emissions and 3 types of tasks
- *
+ * description: Event handling using static & dynamic task allocation strategies
+ * authors: 		Brice Platerrier, Martin Vassor, Arnaud Wald
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
@@ -33,9 +33,9 @@
 // Real parameters
 #define NB_SENSORS	8
 #define BIAS_SPEED	300
-#define WIDTH		52   //pixel width of the camera
-#define HEIGHT		39   //pixel height of the camera
-#define MAXSPEED		1000
+#define WIDTH		52   			//pixel width of the camera
+#define HEIGHT		39   		//pixel height of the camera
+#define MAXSPEED		1000	//maximum speed applied to the motors
 
 // Additional simulation parameters (see receive_local_emission)
 #define MAX_RANGE 0.4 // maximum range of the perception of neighbor emissions
@@ -45,32 +45,31 @@
 /* Problem Description */
 
 // PROBLEM TYPE
-#define DETERMINISTIC	1  // 0= infinite steepness 1= above fitness used
-#define ADAPTIVE		1   // 0=fixed, 1=adaptive thresholds
-#define PUBLIC		1   // 0=local estimation (no information sharing),
-                               // 1= global dissemination (collaboration with neighbors)
+#define DETERMINISTIC	1  	// 0= infinite steepness 1= above fitness used
+#define ADAPTIVE		1   	// 0=fixed, 1=adaptive thresholds
+#define PUBLIC		1   		// 0=local estimation (no information sharing),
+                        	// 1= global dissemination (collaboration with neighbors)
 
 // THRESHOLD BASED ALGORITHM PARAMETERS
-#define THRESHOLD		8  // value of homogeneous threshold
-#define STEEPNESS		30  // steepness of threshold cutoff
-#define ABANDON		0   // probability of giving up task (unused)
-#define LOST_THRESHOLD	3   // number of pixels before a target color is considered lost (used to change FSM state)
-#define THRESHOLD_DELTA	0.01   // TODO valeur arbitraire
-#define ALPHA		1 // weight of the received neighbors perception (global perception)
-#define BETA	 	0.1 // additional weight given to vision (local perception)
+#define THRESHOLD		8  				 // value of homogeneous threshold
+#define STEEPNESS		30  			 // steepness of threshold cutoff
+#define LOST_THRESHOLD	3   	 // number of pixels before a target color is considered lost (used to change FSM state)
+#define THRESHOLD_DELTA	0.01   // delta threshold used for adaptation mechanism
+#define ALPHA		1 						 // weight of the received neighbors perception (global perception)
+#define BETA	 	0.1 					 // additional weight given to vision (local perception)
 
 // COLORS
 #define NB_COLORS		3   // Number of colors
-#define COLOR_BLIND	1   // 1=colors are ignored  0=colors are considered as different tasks
-//#define NO_COLOR               -1 // Nothing special detected on screen (robot in front / gone through cylinder / wall)
+#define COLOR_BLIND	1   // 1=colors are ignored (distance adpatation)  0=colors are considered as different tasks (specialization)
+//#define NO_COLOR -1   // Nothing special detected on screen (robot in front / gone through cylinder / wall)
 typedef enum {NO_COLOR=-1, RED, GREEN, BLUE} color;
 
 // TASKS
-#define PERFORM_THRESHOLD   48 // Number of pixels to consider the robot close enough to the cylinder
-#define STEPS_IDLE         120 // Number of steps while the robot stops to perform a task
-#define STEPS_SEARCH        18 // Number of steps spent in search mode (used for public case)
+#define PERFORM_THRESHOLD   48 	// Number of pixels to consider the robot close enough to the cylinder
+#define STEPS_IDLE         120 	// Number of steps while the robot stops to perform a task
+#define STEPS_SEARCH        18 	// Number of steps spent in search mode (used for public case)
 
-typedef enum {SEARCH, GOTO_TASK, STOP_MOVE} fsm_state;
+typedef enum {SEARCH, GOTO_TASK, PERFORM} fsm_state;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* Global variables */
@@ -156,9 +155,9 @@ if(ADAPTIVE == 1 && COLOR_BLIND == 1) // Adaptive + color blind = Distance adapt
 			if (threshold[i] < LOST_THRESHOLD) threshold[i] = LOST_THRESHOLD;
 		}
 	} else {
-		if (state == SEARCH && previous_state == STOP_MOVE){
+		if (state == SEARCH && previous_state == PERFORM){
 			for(i = 0 ; i < NB_COLORS ; i++){
-				threshold[i] += 1; // TODO eventually increase more
+				threshold[i] += 1;
 			}
 		}
 	}
@@ -167,7 +166,7 @@ if(ADAPTIVE == 1 && COLOR_BLIND == 1) // Adaptive + color blind = Distance adapt
 
 if(ADAPTIVE == 1 && COLOR_BLIND == 0) // Adaptive + not color blind = specialization
 {
-	if(state == STOP_MOVE && previous_state == GOTO_TASK && chosen_color != NO_COLOR) // if chosen_color = no_color, i.e. signal lost => do not specialize
+	if(state == PERFORM && previous_state == GOTO_TASK && chosen_color != NO_COLOR) // if chosen_color = no_color, i.e. signal lost => do not specialize
 	{
 		threshold[chosen_color] -= 100*THRESHOLD_DELTA;
 		for(i = 0 ; i < NB_COLORS ; i++){
@@ -193,13 +192,7 @@ if(ADAPTIVE == 1 && COLOR_BLIND == 0) // Adaptive + not color blind = specializa
 
 // Decision function
 void updateRobot(){
-	/* max_size_color est notre stimulus pour l'instant mais tu peux lui appliquer des
-	   transformations ici et les stocker dans stimulus[NB_COLORS] ou utiliser le pixel_count.
-	   On peut employer des boucles for mais on voulait que le code soit compréhensible dans un
-	   premier temps. De toutes manières, le fonctionnement de la décision est
-	   totalement débile pour l'instant. */
-
-	// In any case (PUBLIC or not), the base stimulus is what we observe. In case of public, we modify it after.
+	// In any case (public or not), the base stimulus is what we observe. In case of public, we modify it afterwards.
 	int c;
 	for(c=0; c<NB_COLORS; c++){
 		stimulus[c] = max_size_color[c]; // the stimulus is the sizes of the closest cylinders
@@ -211,7 +204,6 @@ void updateRobot(){
 
 	if(PUBLIC==1){
 		int i;
-		/* Ici coder la prise en compte des différentes émissions reçues */
 		receive_local_emission();
 		for(i = 0; i < NB_COLORS ; i++)
 		{
@@ -221,8 +213,8 @@ void updateRobot(){
   			if(stimulus[i]<0) stimulus[i] = 0;
   			if(stimulus[i]>max_size_color[i]) stimulus[i] = max_size_color[i];
 		}
-		
-		
+
+
 #ifdef DEBUG
 		if(robot_id == 5)
 		{
@@ -239,8 +231,8 @@ void updateRobot(){
 	}
 	previous_state = state;
 
-         double rand; //declarations for switch statements.
-	// if in search mode, try to pick a color according to probabilities
+  	double rand; // declarations for switch statements.
+		// if in search mode, try to pick a color according to probabilities
 	switch (state) {
 		case SEARCH :
 			rand = rnd();
@@ -262,17 +254,17 @@ void updateRobot(){
 				steps = 0;
 			}
 			else{
-                    		steps++;
-                           }
-    			
+        steps++;
+      }
+
 			break;
 
 			// if in chromataxis mode, check if cylinder was lost
 		case GOTO_TASK :
-		
-          		// Send our local datas.
-                           send_local_emission();
-                           
+
+      // Send our local datas.
+      send_local_emission();
+
 			// Check if color is still in field of view
 			if(chosen_color != NO_COLOR && stimulus[chosen_color] < LOST_THRESHOLD){
 				chosen_color = NO_COLOR;
@@ -284,12 +276,12 @@ void updateRobot(){
 
 			// Slow down to perform action
 			if(chosen_color != NO_COLOR && stimulus[chosen_color] > PERFORM_THRESHOLD){
-				state = STOP_MOVE;
+				state = PERFORM;
 			}
 			break;
 
-			// if gone into STATE3, start idling
-		case STOP_MOVE:
+			// if gone into perform state, start slow motion to process task
+		case PERFORM:
 			if (steps < STEPS_IDLE){
 				//wait
 				steps++;
@@ -399,8 +391,8 @@ void chromataxis(int pos_chosen_color){
 	setSpeed(msl,msr);
 }
 
-// Random Turn
-void randomTurn(){
+// Random turn
+void turn(){
 	msr = -200;
 	msl = 200;
 
@@ -482,10 +474,7 @@ void reset(void) {
 
 void send_local_emission() {
 	char buffer[255];
-	int i;
-	// compute emission strength for each task typedef
-	//for (i=0; i<3; i++)
-	rgb_emission[chosen_color] = (float)max_size_color[chosen_color] / WIDTH; // We send our normalized stimulus for each color.
+	rgb_emission[chosen_color] = (float)max_size_color[chosen_color] / WIDTH; // We send our normalized stimulus for the chosen color.
 
 	// send emission
 	sprintf(buffer, "r:%f g:%f b:%f", rgb_emission[0], rgb_emission[1], rgb_emission[2]);
@@ -510,7 +499,7 @@ void receive_local_emission() {
 		signal_strength = wb_receiver_get_signal_strength(receiver);
 
 		if(signal_strength > min_strength){ // don't take robots too far away into account
-			// if robot is too close, the reception saturates (limit of signal strength)
+			// if robot is too close, the reception saturates (limit signal strength)
 			if(signal_strength > max_strength) signal_strength = max_strength;
 			// receive emissions from other robots
 			sscanf(inbuffer,"r:%f g:%f b:%f",&rgb_received[0], &rgb_received[1], &rgb_received[2]);
@@ -550,13 +539,13 @@ void run(int ms) {
          switch (state)
          {
            case SEARCH :
-		randomTurn();
+		turn();
            break;
            case GOTO_TASK :
 		chromataxis(pos_color[chosen_color]);
            break;
-           case STOP_MOVE :
-		slowMotion(); // slow approach (may be optional)
+           case PERFORM :
+		slowMotion(); // slow approach
            break;
          }
 

@@ -64,8 +64,8 @@ bool printed;
 // Performance measure
 int events_handled = 0;
 int iterations = 1;
-double mean_perf1 = 0.0;
-double mean_perf2 = 0.0;
+//double mean_perf1 = 0.0;
+//double mean_perf2 = 0.0;
 double distance_travelled[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
 double previous_x[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
 double previous_y[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
@@ -205,8 +205,8 @@ static int run(int ms) {
 
     double metric2 = total_distance / events_handled;
 
-    mean_perf1 += metric1/MAX_DURATION;
-    mean_perf2 += metric2/MAX_DURATION;
+    //mean_perf1 += metric1/MAX_DURATION;
+    //mean_perf2 += metric2/MAX_DURATION;
 
     fprintf(outfile, "metric1(%d) = %f;\n", iterations, metric1);
     fprintf(outfile, "metric2(%d) = %f;\n", iterations, metric2);
